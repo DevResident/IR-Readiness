@@ -17,6 +17,8 @@ class Settings(BaseSettings):
     anthropic_effort: str = "medium"  # low | medium | high | xhigh | max
     # Optional Anthropic-compatible gateway (e.g. OpenCode Console). None = api.anthropic.com
     anthropic_base_url: str | None = None
+    # Optional extra HTTP headers for the gateway, as JSON, e.g. {"x-opencode-session": "ses_..."}
+    anthropic_extra_headers: dict[str, str] = {}
     cors_origins: str = "http://localhost:5173"
     log_level: str = "INFO"
 

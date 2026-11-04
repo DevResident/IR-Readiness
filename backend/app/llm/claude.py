@@ -33,6 +33,7 @@ logger = logging.getLogger(__name__)
 # content like ransomware can trip the "cyber" classifier), the API re-runs it on
 # Anthropic's recommended fallback model inside the same call.
 FALLBACK_BETA = "server-side-fallback-2026-07-01"
+USER_AGENT = "ir-readiness-copilot/0.1.0"
 # Models that support server-side fallbacks (Haiku does not).
 FALLBACK_MODELS = {"claude-fable-5-1", "claude-opus-5-5", "claude-opus-5", "claude-sonnet-5-5"}
 
@@ -63,6 +64,8 @@ class ClaudeStructuredLLM:
         client = anthropic.Anthropic(
             api_key=settings.anthropic_api_key.get_secret_value(),
             base_url=settings.anthropic_base_url or None,  # empty or None -> official Anthropic API
+            # Identify the app honestly to the provider, plus any gateway-specific headers.
+            default_headers={"User-Agent": USER_AGENT, **settings.anthropic_extra_headers},
             timeout=300.0,
         )
         use_fallbacks = False if settings.anthropic_base_url else None

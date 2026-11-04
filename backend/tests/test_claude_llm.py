@@ -153,3 +153,16 @@ def test_payment_required_is_a_configuration_error(caplog):
     with caplog.at_level("ERROR"), pytest.raises(LLMNotConfiguredError):
         llm(client).generate(system="s", prompt="p", schema=Out)
     assert "status=402" in caplog.text
+
+
+def test_user_agent_and_extra_headers_are_sent():
+    from pydantic import SecretStr
+
+    from app.core.config import Settings
+    from app.llm.claude import USER_AGENT
+
+    settings = Settings(anthropic_api_key=SecretStr("k"), anthropic_base_url="https://gateway.example/go/anthropic",
+                        anthropic_extra_headers={"x-opencode-session": "ses_test"}, _env_file=None)
+    headers = ClaudeStructuredLLM.from_settings(settings)._client.default_headers
+    assert headers["User-Agent"] == USER_AGENT
+    assert headers["x-opencode-session"] == "ses_test"
