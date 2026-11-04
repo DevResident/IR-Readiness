@@ -140,6 +140,7 @@ class ValidationReport(BaseModel):
     techniques_accepted: int
     techniques_remapped: list[str] = Field(description="Notes for revoked IDs replaced by their official successor.")
     rejected: list[RejectedReference]
+    warnings: list[str] = Field(default_factory=list, description="Quality issues that did not block the exercise.")
 
 
 class TabletopExercise(BaseModel):
