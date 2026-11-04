@@ -33,6 +33,7 @@ logger = logging.getLogger(__name__)
 # content like ransomware can trip the "cyber" classifier), the API re-runs it on
 # Anthropic's recommended fallback model inside the same call.
 FALLBACK_BETA = "server-side-fallback-2026-07-01"
+USER_AGENT = "ir-readiness-copilot/0.1.0"
 # Models that support server-side fallbacks (Haiku does not).
 FALLBACK_MODELS = {"claude-fable-5-1", "claude-opus-5-5", "claude-opus-5", "claude-sonnet-5-5"}
 
@@ -51,6 +52,7 @@ class ClaudeStructuredLLM:
         self._model = model
         # Fallbacks are a beta feature of api.anthropic.com; gateways may not support them.
         self._use_fallbacks = model in FALLBACK_MODELS if use_fallbacks is None else use_fallbacks
+        self._target = str(getattr(client, "base_url", "unknown"))
         self._effort = effort
         self._max_tokens = max_tokens
         self._max_attempts = max_attempts
@@ -62,6 +64,8 @@ class ClaudeStructuredLLM:
         client = anthropic.Anthropic(
             api_key=settings.anthropic_api_key.get_secret_value(),
             base_url=settings.anthropic_base_url or None,  # empty or None -> official Anthropic API
+            # Identify the app honestly to the provider, plus any gateway-specific headers.
+            default_headers={"User-Agent": USER_AGENT, **settings.anthropic_extra_headers},
             timeout=300.0,
         )
         use_fallbacks = False if settings.anthropic_base_url else None
@@ -94,17 +98,23 @@ class ClaudeStructuredLLM:
                 logger.warning("LLM output failed validation (attempt %d): %s", attempt, last_error)
                 messages = _with_correction(prompt, last_error)
                 continue
-            except (anthropic.RateLimitError, anthropic.InternalServerError, anthropic.APIConnectionError) as exc:
+            except anthropic.APIConnectionError as exc:
+                logger.error("LLM connection failed target=%s error=%s: %s",
+                             self._target, type(exc).__name__, exc.__cause__ or exc)
                 raise LLMUnavailableError("The language model is temporarily unavailable") from exc
             except anthropic.AuthenticationError as exc:
-                raise LLMNotConfiguredError("The Anthropic API key was rejected") from exc
-            except anthropic.BadRequestError as exc:
-                # Usually a configuration problem (model name, unsupported parameter on a gateway).
-                logger.error("Anthropic API rejected the request request_id=%s: %s", exc.request_id, exc.message)
-                raise LLMUnavailableError("The language model rejected the request configuration") from exc
+                logger.error("LLM authentication failed target=%s status=401: %s", self._target, exc.message)
+                raise LLMNotConfiguredError("The API key was rejected") from exc
             except anthropic.APIStatusError as exc:
-                logger.error("Anthropic API error status=%s request_id=%s", exc.status_code, exc.request_id)
-                raise LLMUnavailableError("The language model request failed") from exc
+                # The provider's error message is safe to log: it describes our request, not user data.
+                logger.error("LLM request failed target=%s model=%s status=%s request_id=%s: %s",
+                             self._target, self._model, exc.status_code, exc.request_id, exc.message)
+                if exc.status_code == 402:
+                    # Payment required: the account behind the API key has no credit (common on gateways).
+                    raise LLMNotConfiguredError("The AI provider account has no available credit") from exc
+                if isinstance(exc, anthropic.BadRequestError):
+                    raise LLMUnavailableError("The language model rejected the request configuration") from exc
+                raise LLMUnavailableError("The language model is temporarily unavailable") from exc
 
             logger.info(
                 "LLM call ok request_id=%s stop_reason=%s input_tokens=%s output_tokens=%s",

@@ -7,6 +7,8 @@ Layout:
     app/modules/      business logic per product module (tabletop, assessment, aar)
 """
 
+import logging
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -14,6 +16,9 @@ from app.api.routes import attack, health, tabletop
 from app.core.config import get_settings
 
 settings = get_settings()
+
+# Application logs (uvicorn configures only its own loggers). Never log prompts or model output.
+logging.basicConfig(level=settings.log_level.upper(), format="%(levelname)s:     %(name)s - %(message)s")
 
 app = FastAPI(
     title="IR Readiness Copilot",
