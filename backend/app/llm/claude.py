@@ -61,7 +61,7 @@ class ClaudeStructuredLLM:
             raise LLMNotConfiguredError("ANTHROPIC_API_KEY is not set")
         client = anthropic.Anthropic(
             api_key=settings.anthropic_api_key.get_secret_value(),
-            base_url=settings.anthropic_base_url,  # None -> official Anthropic API
+            base_url=settings.anthropic_base_url or None,  # empty or None -> official Anthropic API
             timeout=300.0,
         )
         use_fallbacks = False if settings.anthropic_base_url else None

@@ -99,3 +99,14 @@ def test_gateway_base_url_disables_fallbacks():
     llm = ClaudeStructuredLLM.from_settings(settings)
     assert llm._use_fallbacks is False
     assert str(llm._client.base_url).startswith("https://gateway.example/anthropic")
+
+
+def test_empty_base_url_uses_official_api():
+    from pydantic import SecretStr
+
+    from app.core.config import Settings
+
+    settings = Settings(anthropic_api_key=SecretStr("k"), anthropic_base_url="", _env_file=None)
+    llm = ClaudeStructuredLLM.from_settings(settings)
+    assert "api.anthropic.com" in str(llm._client.base_url)
+    assert llm._use_fallbacks is True
