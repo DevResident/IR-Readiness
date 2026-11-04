@@ -31,10 +31,11 @@ class FakeClient:
     def __init__(self, outcomes):
         self.outcomes = list(outcomes)
         self.calls = []
-        self.beta = SimpleNamespace(messages=SimpleNamespace(parse=self._parse))
+        self.beta = SimpleNamespace(messages=SimpleNamespace(parse=lambda **kw: self._parse("beta", **kw)))
+        self.messages = SimpleNamespace(parse=lambda **kw: self._parse("ga", **kw))
 
-    def _parse(self, **kwargs):
-        self.calls.append(kwargs)
+    def _parse(self, endpoint, **kwargs):
+        self.calls.append({"endpoint": endpoint, **kwargs})
         outcome = self.outcomes.pop(0)
         if isinstance(outcome, Exception):
             raise outcome
@@ -52,6 +53,7 @@ def test_success_sends_expected_request():
     assert call["model"] == "claude-opus-5-5"
     assert call["output_format"] is Out
     assert call["output_config"] == {"effort": "medium"}
+    assert call["endpoint"] == "beta"
     assert call["betas"] == [FALLBACK_BETA] and call["fallbacks"] == "default"
 
 
@@ -78,3 +80,22 @@ def test_refusal_is_not_retried():
     with pytest.raises(LLMRefusalError):
         llm(client).generate(system="s", prompt="p", schema=Out)
     assert len(client.calls) == 1
+
+
+def test_haiku_does_not_send_fallbacks():
+    client = FakeClient([response(parsed=Out(answer="ok"))])
+    ClaudeStructuredLLM(client, model="claude-haiku-5-5").generate(system="s", prompt="p", schema=Out)
+    call = client.calls[0]
+    assert call["endpoint"] == "ga" and "fallbacks" not in call and "betas" not in call
+
+
+def test_gateway_base_url_disables_fallbacks():
+    from pydantic import SecretStr
+
+    from app.core.config import Settings
+
+    settings = Settings(anthropic_api_key=SecretStr("k"), anthropic_model="claude-opus-5-5",
+                        anthropic_base_url="https://gateway.example/anthropic", _env_file=None)
+    llm = ClaudeStructuredLLM.from_settings(settings)
+    assert llm._use_fallbacks is False
+    assert str(llm._client.base_url).startswith("https://gateway.example/anthropic")

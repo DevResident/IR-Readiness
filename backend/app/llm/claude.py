@@ -33,6 +33,8 @@ logger = logging.getLogger(__name__)
 # content like ransomware can trip the "cyber" classifier), the API re-runs it on
 # Anthropic's recommended fallback model inside the same call.
 FALLBACK_BETA = "server-side-fallback-2026-07-01"
+# Models that support server-side fallbacks (Haiku does not).
+FALLBACK_MODELS = {"claude-fable-5-1", "claude-opus-5-5", "claude-opus-5", "claude-sonnet-5-5"}
 
 
 class ClaudeStructuredLLM:
@@ -43,9 +45,12 @@ class ClaudeStructuredLLM:
         effort: str = "medium",
         max_tokens: int = 16000,
         max_attempts: int = 2,
+        use_fallbacks: bool | None = None,
     ):
         self._client = client
         self._model = model
+        # Fallbacks are a beta feature of api.anthropic.com; gateways may not support them.
+        self._use_fallbacks = model in FALLBACK_MODELS if use_fallbacks is None else use_fallbacks
         self._effort = effort
         self._max_tokens = max_tokens
         self._max_attempts = max_attempts
@@ -54,8 +59,27 @@ class ClaudeStructuredLLM:
     def from_settings(cls, settings) -> "ClaudeStructuredLLM":
         if settings.anthropic_api_key is None:
             raise LLMNotConfiguredError("ANTHROPIC_API_KEY is not set")
-        client = anthropic.Anthropic(api_key=settings.anthropic_api_key.get_secret_value(), timeout=300.0)
-        return cls(client, model=settings.anthropic_model, effort=settings.anthropic_effort)
+        client = anthropic.Anthropic(
+            api_key=settings.anthropic_api_key.get_secret_value(),
+            base_url=settings.anthropic_base_url,  # None -> official Anthropic API
+            timeout=300.0,
+        )
+        use_fallbacks = False if settings.anthropic_base_url else None
+        return cls(client, model=settings.anthropic_model, effort=settings.anthropic_effort,
+                   use_fallbacks=use_fallbacks)
+
+    def _call(self, system: str, messages: list[dict], schema: type[T]):
+        common = dict(
+            model=self._model,
+            max_tokens=self._max_tokens,
+            system=system,
+            messages=messages,
+            output_format=schema,
+            output_config={"effort": self._effort},
+        )
+        if self._use_fallbacks:
+            return self._client.beta.messages.parse(**common, betas=[FALLBACK_BETA], fallbacks="default")
+        return self._client.messages.parse(**common)
 
     def generate(self, *, system: str, prompt: str, schema: type[T]) -> T:
         messages: list[dict] = [{"role": "user", "content": prompt}]
@@ -63,16 +87,7 @@ class ClaudeStructuredLLM:
 
         for attempt in range(1, self._max_attempts + 1):
             try:
-                response = self._client.beta.messages.parse(
-                    model=self._model,
-                    max_tokens=self._max_tokens,
-                    system=system,
-                    messages=messages,
-                    output_format=schema,
-                    output_config={"effort": self._effort},
-                    betas=[FALLBACK_BETA],
-                    fallbacks="default",
-                )
+                response = self._call(system, messages, schema)
             except ValidationError as exc:
                 # The SDK received JSON that violates client-side constraints.
                 last_error = _summarize_validation_error(exc)
@@ -83,6 +98,10 @@ class ClaudeStructuredLLM:
                 raise LLMUnavailableError("The language model is temporarily unavailable") from exc
             except anthropic.AuthenticationError as exc:
                 raise LLMNotConfiguredError("The Anthropic API key was rejected") from exc
+            except anthropic.BadRequestError as exc:
+                # Usually a configuration problem (model name, unsupported parameter on a gateway).
+                logger.error("Anthropic API rejected the request request_id=%s: %s", exc.request_id, exc.message)
+                raise LLMUnavailableError("The language model rejected the request configuration") from exc
             except anthropic.APIStatusError as exc:
                 logger.error("Anthropic API error status=%s request_id=%s", exc.status_code, exc.request_id)
                 raise LLMUnavailableError("The language model request failed") from exc

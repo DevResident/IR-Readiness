@@ -15,6 +15,8 @@ class Settings(BaseSettings):
     anthropic_api_key: SecretStr | None = None  # SecretStr hides the value in repr() and logs
     anthropic_model: str = "claude-opus-5-5"
     anthropic_effort: str = "medium"  # low | medium | high | xhigh | max
+    # Optional Anthropic-compatible gateway (e.g. OpenCode Console). None = api.anthropic.com
+    anthropic_base_url: str | None = None
     cors_origins: str = "http://localhost:5173"
     log_level: str = "INFO"
 
