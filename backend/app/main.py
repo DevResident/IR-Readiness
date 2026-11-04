@@ -1,10 +1,17 @@
-"""FastAPI entry point for IR Readiness Copilot."""
+"""FastAPI entry point for IR Readiness Copilot.
+
+Layout:
+    app/api/routes/   HTTP endpoints, one router per area
+    app/core/         cross-cutting concerns (settings)
+    app/catalogs/     loaders and validators for the data in /frameworks
+    app/modules/      business logic per product module (tabletop, assessment, aar)
+"""
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from app.config import get_settings
-from app.frameworks.attack import get_catalog
+from app.api.routes import attack, health
+from app.core.config import get_settings
 
 settings = get_settings()
 
@@ -22,29 +29,5 @@ app.add_middleware(
     allow_headers=["Content-Type"],
 )
 
-
-@app.get("/api/health")
-def health() -> dict:
-    catalog = get_catalog()
-    return {
-        "status": "ok",
-        "attack_version": catalog.version,
-        "attack_techniques": len(catalog),
-        "llm_configured": settings.anthropic_api_key is not None,
-    }
-
-
-@app.get("/api/attack/techniques/{technique_id}")
-def validate_technique(technique_id: str) -> dict:
-    """Debug/demo endpoint: shows exactly how the validator treats an ID."""
-    result = get_catalog().validate(technique_id)
-    tech = result.technique
-    return {
-        "input": result.input_id,
-        "status": result.status.value,
-        "accepted": result.accepted,
-        "technique": None if tech is None else {
-            "id": tech.id, "name": tech.name, "tactics": list(tech.tactics), "url": tech.url,
-        },
-        "note": result.note,
-    }
+app.include_router(health.router, prefix="/api")
+app.include_router(attack.router, prefix="/api")
