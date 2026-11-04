@@ -142,3 +142,14 @@ def test_connection_errors_are_logged(caplog):
     with caplog.at_level("ERROR"), pytest.raises(LLMUnavailableError):
         llm(client).generate(system="s", prompt="p", schema=Out)
     assert "LLM connection failed" in caplog.text
+
+
+def test_payment_required_is_a_configuration_error(caplog):
+    import anthropic
+
+    from app.llm.base import LLMNotConfiguredError
+
+    client = FakeClient([_status_error(anthropic.APIStatusError, 402)])
+    with caplog.at_level("ERROR"), pytest.raises(LLMNotConfiguredError):
+        llm(client).generate(system="s", prompt="p", schema=Out)
+    assert "status=402" in caplog.text

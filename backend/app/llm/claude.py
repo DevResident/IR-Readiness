@@ -106,6 +106,9 @@ class ClaudeStructuredLLM:
                 # The provider's error message is safe to log: it describes our request, not user data.
                 logger.error("LLM request failed target=%s model=%s status=%s request_id=%s: %s",
                              self._target, self._model, exc.status_code, exc.request_id, exc.message)
+                if exc.status_code == 402:
+                    # Payment required: the account behind the API key has no credit (common on gateways).
+                    raise LLMNotConfiguredError("The AI provider account has no available credit") from exc
                 if isinstance(exc, anthropic.BadRequestError):
                     raise LLMUnavailableError("The language model rejected the request configuration") from exc
                 raise LLMUnavailableError("The language model is temporarily unavailable") from exc
