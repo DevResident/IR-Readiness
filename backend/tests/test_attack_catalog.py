@@ -6,7 +6,7 @@ The synthetic catalog tests exercise each status branch without depending on MIT
 
 import pytest
 
-from app.frameworks.attack import AttackCatalog, Status, get_catalog
+from app.catalogs.attack import AttackCatalog, Status, get_catalog
 
 SYNTHETIC = {
     "source": {"version": "test"},

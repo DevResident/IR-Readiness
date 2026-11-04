@@ -15,26 +15,30 @@ MVP in ~12 working days at 2–3 h/day. Priority: Module 2 (Tabletop Generator),
 ## Repository layout
 
 ```
-ir-readiness-copilot/
-├── backend/
+ir-readiness/                  # monorepo: backend + frontend + shared data
+├── backend/                   # FastAPI
 │   ├── app/
-│   │   ├── main.py            # FastAPI app, routes
-│   │   ├── config.py          # settings from env (.env), secrets as SecretStr
-│   │   ├── frameworks/        # loaders + validators for /frameworks data
+│   │   ├── main.py            # app factory, middleware, router registration
+│   │   ├── api/routes/        # HTTP endpoints, one router per area
+│   │   ├── core/config.py     # settings from env (.env), secrets as SecretStr
+│   │   ├── catalogs/          # loaders + validators for the data in /frameworks
 │   │   ├── llm/               # Claude client wrapper, prompts, defensive JSON parsing   (day 3)
-│   │   ├── tabletop/          # Module 2: schemas, service                                (days 2–3)
-│   │   ├── assessment/        # Module 1: upload handling, extraction, scoring            (days 6–8)
-│   │   └── aar/               # Module 3: AAR generation, PDF/DOCX export                 (days 9–10)
+│   │   └── modules/
+│   │       ├── tabletop/      # Module 2: schemas, service                                (days 2–3)
+│   │       ├── assessment/    # Module 1: upload handling, extraction, scoring            (days 6–8)
+│   │       └── aar/           # Module 3: AAR generation, PDF/DOCX export                 (days 9–10)
 │   └── tests/
-├── frameworks/
+├── frontend/                  # React + Vite                                              (day 4)
+├── frameworks/                # shared framework DATA (JSON), no code
 │   ├── attack/                # generated ATT&CK subset (pinned version)
 │   ├── nist/                  # SP 800-61r3 / CSF 2.0 derived checklists and phase model
 │   └── scenarios/             # tabletop scenario templates
-├── frontend/                  # React + Vite                                              (day 4)
 ├── scripts/                   # data build scripts (e.g. build_attack_subset.py)
 ├── examples/                  # fictional IR plan + assessment, ransomware tabletop + AAR
 └── docs/
 ```
+
+Why a monorepo: the API contract, the framework data and both apps change together in the same pull request, and reviewers find the whole project behind one link.
 
 ## Day-by-day
 
