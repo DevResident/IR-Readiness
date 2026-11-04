@@ -1,8 +1,16 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends, HTTPException
 
+from app.api.deps import get_tabletop_service
 from app.catalogs.ir_lifecycle import get_ir_lifecycle
 from app.catalogs.scenarios import get_scenarios
-from app.modules.tabletop.schemas import Audience, Industry, OrgSize
+from app.llm.base import (
+    LLMInvalidOutputError,
+    LLMNotConfiguredError,
+    LLMRefusalError,
+    LLMUnavailableError,
+)
+from app.modules.tabletop.schemas import Audience, Industry, OrgSize, TabletopExercise, TabletopRequest
+from app.modules.tabletop.service import TabletopService
 
 router = APIRouter(prefix="/tabletop", tags=["tabletop"])
 
@@ -20,3 +28,18 @@ def options() -> dict:
             for p in get_ir_lifecycle().phases
         ],
     }
+
+
+@router.post("", response_model=TabletopExercise)
+def generate_tabletop(request: TabletopRequest, service: TabletopService = Depends(get_tabletop_service)) -> TabletopExercise:
+    # Error messages are generic on purpose: no provider details or model output leak to clients.
+    try:
+        return service.generate(request)
+    except LLMNotConfiguredError as exc:
+        raise HTTPException(status_code=503, detail="The AI model is not configured on the server") from exc
+    except LLMUnavailableError as exc:
+        raise HTTPException(status_code=503, detail="The AI model is temporarily unavailable, try again") from exc
+    except LLMRefusalError as exc:
+        raise HTTPException(status_code=422, detail="The AI model declined to generate this exercise") from exc
+    except LLMInvalidOutputError as exc:
+        raise HTTPException(status_code=502, detail="The AI model returned an invalid exercise, try again") from exc

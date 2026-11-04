@@ -13,7 +13,8 @@ class Settings(BaseSettings):
     model_config = SettingsConfigDict(env_file=".env", extra="ignore")
 
     anthropic_api_key: SecretStr | None = None  # SecretStr hides the value in repr() and logs
-    anthropic_model: str = "claude-sonnet-5-5"
+    anthropic_model: str = "claude-opus-5-5"
+    anthropic_effort: str = "medium"  # low | medium | high | xhigh | max
     cors_origins: str = "http://localhost:5173"
     log_level: str = "INFO"
 

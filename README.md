@@ -19,9 +19,26 @@ cd backend
 python -m venv .venv && source .venv/bin/activate   # Windows: .venv\Scripts\activate
 pip install -r requirements-dev.txt
 python -m pytest -q
+cp ../.env.example .env   # then set ANTHROPIC_API_KEY (only needed to call the model; tests never use it)
 uvicorn app.main:app --reload
 # then open http://127.0.0.1:8000/docs
 ```
+
+Generate a tabletop exercise:
+
+```bash
+curl -s -X POST http://127.0.0.1:8000/api/tabletop \
+  -H "Content-Type: application/json" \
+  -d '{"industry":"healthcare","org_size":"medium","scenario":"ransomware","audience":"executive"}'
+```
+
+## How a tabletop is generated
+
+1. The request contains only enumerated values (industry, size, scenario, audience), so no free text reaches the prompt.
+2. The prompt is built from the scenario template, the NIST SP 800-61r3 phases and a fixed list of CSF 2.0 categories.
+3. Claude returns JSON constrained to the `TabletopDraft` schema (structured outputs); the SDK also validates lengths and list sizes client-side. Invalid or truncated output is retried once with the validation error as feedback.
+4. Every ATT&CK technique ID is checked against the pinned v20.0 catalog: unknown IDs are dropped, revoked IDs are replaced by MITRE's official successor, and names/URLs come from the catalog. Unknown CSF categories are removed.
+5. The response includes a `validation` report listing everything that was dropped, remapped or flagged.
 
 ## Regenerating the ATT&CK subset
 
