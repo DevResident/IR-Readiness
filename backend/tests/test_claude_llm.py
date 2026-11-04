@@ -110,3 +110,35 @@ def test_empty_base_url_uses_official_api():
     llm = ClaudeStructuredLLM.from_settings(settings)
     assert "api.anthropic.com" in str(llm._client.base_url)
     assert llm._use_fallbacks is True
+
+
+def _status_error(cls, status):
+    import httpx2
+
+    req = httpx2.Request("POST", "https://gateway.example/v1/messages")
+    resp = httpx2.Response(status, request=req, json={"error": {"message": "model not found"}})
+    return cls("model not found", response=resp, body=None)
+
+
+def test_status_errors_are_logged_with_status_and_message(caplog):
+    import anthropic
+
+    from app.llm.base import LLMUnavailableError
+
+    client = FakeClient([_status_error(anthropic.NotFoundError, 404)])
+    with caplog.at_level("ERROR"), pytest.raises(LLMUnavailableError):
+        llm(client).generate(system="s", prompt="p", schema=Out)
+    assert "status=404" in caplog.text and "model not found" in caplog.text
+
+
+def test_connection_errors_are_logged(caplog):
+    import anthropic
+    import httpx2
+
+    from app.llm.base import LLMUnavailableError
+
+    exc = anthropic.APIConnectionError(request=httpx2.Request("POST", "https://gateway.example"))
+    client = FakeClient([exc])
+    with caplog.at_level("ERROR"), pytest.raises(LLMUnavailableError):
+        llm(client).generate(system="s", prompt="p", schema=Out)
+    assert "LLM connection failed" in caplog.text

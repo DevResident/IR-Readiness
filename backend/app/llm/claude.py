@@ -51,6 +51,7 @@ class ClaudeStructuredLLM:
         self._model = model
         # Fallbacks are a beta feature of api.anthropic.com; gateways may not support them.
         self._use_fallbacks = model in FALLBACK_MODELS if use_fallbacks is None else use_fallbacks
+        self._target = str(getattr(client, "base_url", "unknown"))
         self._effort = effort
         self._max_tokens = max_tokens
         self._max_attempts = max_attempts
@@ -94,17 +95,20 @@ class ClaudeStructuredLLM:
                 logger.warning("LLM output failed validation (attempt %d): %s", attempt, last_error)
                 messages = _with_correction(prompt, last_error)
                 continue
-            except (anthropic.RateLimitError, anthropic.InternalServerError, anthropic.APIConnectionError) as exc:
+            except anthropic.APIConnectionError as exc:
+                logger.error("LLM connection failed target=%s error=%s: %s",
+                             self._target, type(exc).__name__, exc.__cause__ or exc)
                 raise LLMUnavailableError("The language model is temporarily unavailable") from exc
             except anthropic.AuthenticationError as exc:
-                raise LLMNotConfiguredError("The Anthropic API key was rejected") from exc
-            except anthropic.BadRequestError as exc:
-                # Usually a configuration problem (model name, unsupported parameter on a gateway).
-                logger.error("Anthropic API rejected the request request_id=%s: %s", exc.request_id, exc.message)
-                raise LLMUnavailableError("The language model rejected the request configuration") from exc
+                logger.error("LLM authentication failed target=%s status=401: %s", self._target, exc.message)
+                raise LLMNotConfiguredError("The API key was rejected") from exc
             except anthropic.APIStatusError as exc:
-                logger.error("Anthropic API error status=%s request_id=%s", exc.status_code, exc.request_id)
-                raise LLMUnavailableError("The language model request failed") from exc
+                # The provider's error message is safe to log: it describes our request, not user data.
+                logger.error("LLM request failed target=%s model=%s status=%s request_id=%s: %s",
+                             self._target, self._model, exc.status_code, exc.request_id, exc.message)
+                if isinstance(exc, anthropic.BadRequestError):
+                    raise LLMUnavailableError("The language model rejected the request configuration") from exc
+                raise LLMUnavailableError("The language model is temporarily unavailable") from exc
 
             logger.info(
                 "LLM call ok request_id=%s stop_reason=%s input_tokens=%s output_tokens=%s",
