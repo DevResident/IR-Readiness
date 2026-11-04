@@ -1,0 +1,73 @@
+{
+  "source": {
+    "title": "NIST SP 800-61 Rev. 3, Incident Response Recommendations and Considerations for Cybersecurity Risk Management: A CSF 2.0 Community Profile",
+    "published": "2025-04-03",
+    "url": "https://csrc.nist.gov/pubs/sp/800/61/r3/final",
+    "sections_used": [
+      "Section 2.1, Fig. 2 'Incident response life cycle model based on CSF 2.0 Functions'",
+      "Section 2.1, Table 1 'Previous incident response life cycle model's phases and corresponding CSF 2.0 Functions'",
+      "Section 3, Table 2 (Preparation and Lessons Learned) and Table 3 (Incident Response)"
+    ],
+    "notes": "Rev. 3 models incident response with the six CSF 2.0 Functions. Detect, Respond and Recover are the incident response itself; Govern, Identify and Protect are preparation; continuous improvement is the Improvement Category (ID.IM) of Identify."
+  },
+  "phases": [
+    {
+      "id": "prepare",
+      "name": "Preparation",
+      "csf_functions": ["GV", "ID", "PR"],
+      "is_incident_response": false,
+      "rev2_equivalent": "Preparation",
+      "description": "Governance, risk understanding and protective measures in place before an incident."
+    },
+    {
+      "id": "detect",
+      "name": "Detect",
+      "csf_functions": ["DE"],
+      "is_incident_response": true,
+      "rev2_equivalent": "Detection & Analysis",
+      "description": "Finding and analyzing possible attacks and compromises."
+    },
+    {
+      "id": "respond",
+      "name": "Respond",
+      "csf_functions": ["RS"],
+      "is_incident_response": true,
+      "rev2_equivalent": "Containment, Eradication & Recovery",
+      "description": "Managing, analyzing, communicating about and mitigating a detected incident."
+    },
+    {
+      "id": "recover",
+      "name": "Recover",
+      "csf_functions": ["RC"],
+      "is_incident_response": true,
+      "rev2_equivalent": "Containment, Eradication & Recovery",
+      "description": "Restoring assets and operations affected by the incident."
+    },
+    {
+      "id": "improve",
+      "name": "Lessons learned (Improvement)",
+      "csf_functions": ["ID.IM"],
+      "is_incident_response": false,
+      "rev2_equivalent": "Post-Incident Activity",
+      "description": "Lessons from every phase are analyzed, prioritized and fed back into all Functions."
+    }
+  ],
+  "csf_categories": {
+    "GV.RR": "Roles, Responsibilities, and Authorities",
+    "GV.SC": "Cybersecurity Supply Chain Risk Management",
+    "ID.IM": "Improvement",
+    "DE.CM": "Continuous Monitoring",
+    "DE.AE": "Adverse Event Analysis",
+    "RS.MA": "Incident Management",
+    "RS.AN": "Incident Analysis",
+    "RS.CO": "Incident Response Reporting and Communication",
+    "RS.MI": "Incident Mitigation",
+    "RC.RP": "Incident Recovery Plan Execution",
+    "RC.CO": "Incident Recovery Communication"
+  },
+  "csf_categories_source": {
+    "title": "NIST CSWP 29, The NIST Cybersecurity Framework (CSF) 2.0",
+    "url": "https://nvlpubs.nist.gov/nistpubs/CSWP/NIST.CSWP.29.pdf",
+    "section": "Appendix A, CSF Core"
+  }
+}

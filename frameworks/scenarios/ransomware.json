@@ -1,0 +1,74 @@
+{
+  "id": "ransomware",
+  "name": "Ransomware with data extortion",
+  "summary": "An attacker gains a foothold, steals credentials, moves laterally, exfiltrates data and then encrypts systems, threatening to publish the stolen data unless a ransom is paid (\"double extortion\").",
+  "attack_path": [
+    {
+      "stage": "Initial access",
+      "description": "Phishing email with a malicious attachment, or login to an exposed remote access service with stolen credentials.",
+      "techniques": [
+        "T1566.001",
+        "T1133",
+        "T1078"
+      ]
+    },
+    {
+      "stage": "Execution and credential theft",
+      "description": "Scripts run on the first host and credentials are dumped from memory.",
+      "techniques": [
+        "T1059.001",
+        "T1003.001"
+      ]
+    },
+    {
+      "stage": "Discovery and lateral movement",
+      "description": "The attacker maps accounts and servers and moves between hosts over RDP.",
+      "techniques": [
+        "T1087",
+        "T1018",
+        "T1021.001"
+      ]
+    },
+    {
+      "stage": "Exfiltration",
+      "description": "Sensitive data is uploaded to attacker-controlled cloud storage before encryption.",
+      "techniques": [
+        "T1567.002"
+      ]
+    },
+    {
+      "stage": "Impact",
+      "description": "Security tools are disabled, backups and shadow copies are deleted, services are stopped and files are encrypted.",
+      "techniques": [
+        "T1685",
+        "T1490",
+        "T1489",
+        "T1486"
+      ]
+    }
+  ],
+  "key_decisions": [
+    "When to declare an incident and who has the authority to do so",
+    "Whether to isolate systems or the whole network, accepting business downtime",
+    "Whether to engage law enforcement, outside counsel and a forensics firm",
+    "Whether paying the ransom is legally permitted and acceptable to leadership",
+    "Which systems to restore first, and how to confirm backups are clean"
+  ],
+  "stakeholders": [
+    "Incident response lead",
+    "IT operations",
+    "Executive leadership",
+    "Legal counsel",
+    "Communications / PR",
+    "Cyber insurance carrier",
+    "Business continuity owner"
+  ],
+  "csf_focus": [
+    "RS.MA",
+    "RS.AN",
+    "RS.MI",
+    "RS.CO",
+    "RC.RP",
+    "RC.CO"
+  ]
+}

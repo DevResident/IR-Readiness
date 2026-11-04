@@ -1,0 +1,60 @@
+{
+  "id": "supply_chain",
+  "name": "Compromised software vendor update",
+  "summary": "A trusted vendor's software update is backdoored. The organization installs it through its normal deployment tooling, giving the attacker remote access.",
+  "attack_path": [
+    {
+      "stage": "Initial access",
+      "description": "A legitimate, signed update from the vendor contains malicious code; the vendor's access to the environment may also be abused.",
+      "techniques": [
+        "T1195.002",
+        "T1199"
+      ]
+    },
+    {
+      "stage": "Execution and spread",
+      "description": "The update is pushed to many hosts through the organization's own software deployment tools.",
+      "techniques": [
+        "T1072"
+      ]
+    },
+    {
+      "stage": "Persistence and command and control",
+      "description": "The backdoored binary keeps running and beacons to the attacker over normal web traffic; remote access tools are added.",
+      "techniques": [
+        "T1554",
+        "T1071.001",
+        "T1219"
+      ]
+    },
+    {
+      "stage": "Exfiltration",
+      "description": "Data is sent out over the same command-and-control channel.",
+      "techniques": [
+        "T1041"
+      ]
+    }
+  ],
+  "key_decisions": [
+    "Whether to uninstall the vendor software, accepting the loss of its function",
+    "How to coordinate with the vendor, and what to demand from them",
+    "How to scope affected hosts when the malicious code was signed and trusted",
+    "Whether contracts require notifying the organization's own customers"
+  ],
+  "stakeholders": [
+    "Incident response lead",
+    "Vendor / third-party risk manager",
+    "IT operations",
+    "Procurement",
+    "Legal counsel",
+    "Executive leadership"
+  ],
+  "csf_focus": [
+    "GV.SC",
+    "RS.MA",
+    "RS.AN",
+    "RS.MI",
+    "RS.CO",
+    "RC.RP"
+  ]
+}
