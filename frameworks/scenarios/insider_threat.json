@@ -1,0 +1,61 @@
+{
+  "id": "insider_threat",
+  "name": "Malicious insider data theft",
+  "summary": "A departing employee with legitimate access collects confidential data from internal repositories and cloud storage and takes it out of the organization.",
+  "attack_path": [
+    {
+      "stage": "Access",
+      "description": "The employee uses their own valid account; no exploit is needed.",
+      "techniques": [
+        "T1078"
+      ]
+    },
+    {
+      "stage": "Collection",
+      "description": "Documents are gathered from wikis, file shares, cloud storage and the local workstation, then compressed.",
+      "techniques": [
+        "T1213",
+        "T1530",
+        "T1005",
+        "T1074",
+        "T1560"
+      ]
+    },
+    {
+      "stage": "Exfiltration",
+      "description": "Archives are copied to a USB drive or uploaded to a personal cloud account.",
+      "techniques": [
+        "T1052.001",
+        "T1567.002"
+      ]
+    },
+    {
+      "stage": "Cover-up or sabotage",
+      "description": "Permissions are changed or data is deleted to slow the investigation.",
+      "techniques": [
+        "T1098",
+        "T1485"
+      ]
+    }
+  ],
+  "key_decisions": [
+    "How to involve HR and legal without tipping off the employee",
+    "How to preserve evidence so it remains usable in legal proceedings",
+    "When to revoke access, and whether to do it before or after confronting the employee",
+    "Whether the stolen data triggers contractual or regulatory notification"
+  ],
+  "stakeholders": [
+    "Incident response lead",
+    "Human resources",
+    "Legal counsel",
+    "Employee's manager",
+    "Data owner",
+    "Executive leadership"
+  ],
+  "csf_focus": [
+    "RS.MA",
+    "RS.AN",
+    "RS.MI",
+    "RS.CO"
+  ]
+}

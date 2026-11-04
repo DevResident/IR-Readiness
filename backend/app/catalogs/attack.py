@@ -14,9 +14,9 @@ from enum import Enum
 from functools import lru_cache
 from pathlib import Path
 
-DEFAULT_CATALOG = (
-    Path(__file__).resolve().parents[3] / "frameworks" / "attack" / "enterprise-attack-v20.0-subset.json"
-)
+from app.catalogs.paths import FRAMEWORKS_DIR
+
+DEFAULT_CATALOG = FRAMEWORKS_DIR / "attack" / "enterprise-attack-v20.0-subset.json"
 
 # T + 4 digits, optionally a sub-technique suffix of 3 digits (e.g. T1566 or T1566.001).
 TECHNIQUE_ID_RE = re.compile(r"^T\d{4}(?:\.\d{3})?$")

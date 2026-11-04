@@ -1,0 +1,61 @@
+{
+  "id": "bec",
+  "name": "Business email compromise",
+  "summary": "An attacker takes over an executive or finance mailbox, hides their activity with inbox rules and uses the trusted account to redirect a payment.",
+  "attack_path": [
+    {
+      "stage": "Initial access",
+      "description": "Credential-phishing link leads to a fake sign-in page; MFA is bypassed through repeated push prompts or a stolen session cookie.",
+      "techniques": [
+        "T1566.002",
+        "T1621",
+        "T1539",
+        "T1078.004"
+      ]
+    },
+    {
+      "stage": "Persistence and stealth",
+      "description": "Inbox rules forward or hide messages so the real user does not notice replies from the attacker's targets.",
+      "techniques": [
+        "T1114.003",
+        "T1564.008"
+      ]
+    },
+    {
+      "stage": "Collection",
+      "description": "The attacker reads invoices and vendor threads to learn payment processes.",
+      "techniques": [
+        "T1114.002"
+      ]
+    },
+    {
+      "stage": "Fraud",
+      "description": "Phishing is sent internally from the trusted account and a vendor payment is redirected to an attacker-controlled bank account.",
+      "techniques": [
+        "T1534",
+        "T1657"
+      ]
+    }
+  ],
+  "key_decisions": [
+    "How quickly the bank can be contacted to attempt a payment recall",
+    "Whether other mailboxes or the identity provider are also compromised",
+    "Whether customers or vendors whose data was in the mailbox must be notified",
+    "What payment verification controls change after the incident"
+  ],
+  "stakeholders": [
+    "Incident response lead",
+    "Finance / accounts payable",
+    "Identity and access team",
+    "Legal counsel",
+    "Executive leadership",
+    "Bank relationship manager"
+  ],
+  "csf_focus": [
+    "RS.MA",
+    "RS.AN",
+    "RS.MI",
+    "RS.CO",
+    "RC.RP"
+  ]
+}
