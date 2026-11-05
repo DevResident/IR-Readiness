@@ -51,7 +51,7 @@ Why a monorepo: the API contract, the framework data and both apps change togeth
 | 5 | Polish Module 2, ransomware tabletop in `/examples`, demo mode, Markdown rendering | done (moved ahead of day 4) |
 | 6 | Module 1: secure upload (type sniffing, size limit, delete after analysis), PDF/DOCX/MD text extraction, readiness checklist JSON | done |
 | 7 | Per-control evaluation, quote verification against the source text (UNVERIFIED on mismatch), scoring formula | done |
-| 8 | Module 1 UI, fictional IR plan + its assessment in `/examples` | |
+| 8 | Module 1 UI, fictional IR plan + its assessment in `/examples` | UI and plan done; real assessment example pending |
 | 9 | Module 3: notes → structured AAR with prioritized recommendations and suggested owners | |
 | 10 | PDF/DOCX export, AAR example | |
 | 11 | README (architecture diagram, pipeline, screenshots, limitations, roadmap), GitHub Actions CI | |

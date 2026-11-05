@@ -1,4 +1,4 @@
-import type { Health, TabletopExercise, TabletopOptions, TabletopRequest } from './types'
+import type { AssessmentReport, Health, TabletopExercise, TabletopOptions, TabletopRequest } from './types'
 
 export class ApiError extends Error {
   readonly status: number
@@ -39,6 +39,11 @@ export const api = {
   tabletopOptions: async (): Promise<TabletopOptions> => (await request('/tabletop/options')).json(),
   generateTabletop: async (req: TabletopRequest): Promise<TabletopExercise> =>
     (await request('/tabletop', json(req))).json(),
+  assessPlan: async (file: File): Promise<AssessmentReport> => {
+    const body = new FormData()
+    body.append('file', file)
+    return (await request('/assessment', { method: 'POST', body })).json()
+  },
   tabletopMarkdown: async (exercise: TabletopExercise): Promise<string> =>
     (await request('/tabletop/markdown', json(exercise))).text(),
 }

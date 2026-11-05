@@ -1,27 +1,24 @@
 import { useEffect, useState } from 'react'
 import { api } from './api/client'
-import type { Health, TabletopExercise, TabletopOptions, TabletopRequest } from './api/types'
-import { ExerciseView } from './components/ExerciseView'
-import { TabletopForm } from './components/TabletopForm'
+import type { Health, TabletopOptions } from './api/types'
+import { AssessmentPage } from './pages/AssessmentPage'
+import { TabletopPage } from './pages/TabletopPage'
 
-function slug(text: string): string {
-  return text.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '').slice(0, 60) || 'tabletop'
-}
+type Tab = 'tabletop' | 'assessment'
 
-function download(filename: string, content: string, type: string) {
-  const url = URL.createObjectURL(new Blob([content], { type }))
-  const a = document.createElement('a')
-  a.href = url
-  a.download = filename
-  a.click()
-  URL.revokeObjectURL(url)
+const TABS: { id: Tab; label: string }[] = [
+  { id: 'tabletop', label: 'Tabletop exercise' },
+  { id: 'assessment', label: 'Plan assessment' },
+]
+
+function initialTab(): Tab {
+  return window.location.hash === '#assessment' ? 'assessment' : 'tabletop'
 }
 
 export default function App() {
   const [health, setHealth] = useState<Health | null>(null)
   const [options, setOptions] = useState<TabletopOptions | null>(null)
-  const [exercise, setExercise] = useState<TabletopExercise | null>(null)
-  const [loading, setLoading] = useState(false)
+  const [tab, setTab] = useState<Tab>(initialTab)
   const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
@@ -33,25 +30,9 @@ export default function App() {
       .catch(() => setError('Cannot reach the backend. Is it running on port 8000?'))
   }, [])
 
-  async function generate(request: TabletopRequest) {
-    setLoading(true)
-    setError(null)
-    try {
-      setExercise(await api.generateTabletop(request))
-    } catch (e) {
-      setError(e instanceof Error ? e.message : 'Something went wrong')
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  async function exportMarkdown() {
-    if (!exercise) return
-    try {
-      download(`${slug(exercise.title)}.md`, await api.tabletopMarkdown(exercise), 'text/markdown')
-    } catch (e) {
-      setError(e instanceof Error ? e.message : 'Export failed')
-    }
+  function select(next: Tab) {
+    setTab(next)
+    history.replaceState(null, '', `#${next}`)
   }
 
   return (
@@ -59,7 +40,8 @@ export default function App() {
       <header>
         <h1>IR Readiness Copilot</h1>
         <p className="muted">
-          Tabletop exercises mapped to NIST SP 800-61r3 and CSF 2.0, with every MITRE ATT&CK reference verified.
+          Incident response readiness checks and tabletop exercises mapped to NIST SP 800-61r3 and CSF 2.0, with every
+          framework reference verified.
         </p>
         {health && (
           <p className="status">
@@ -73,50 +55,31 @@ export default function App() {
             )}
           </p>
         )}
+        <nav className="tabs" role="tablist" aria-label="Modules">
+          {TABS.map((t) => (
+            <button
+              key={t.id}
+              type="button"
+              role="tab"
+              aria-selected={tab === t.id}
+              className={tab === t.id ? 'tab active' : 'tab'}
+              onClick={() => select(t.id)}
+            >
+              {t.label}
+            </button>
+          ))}
+        </nav>
       </header>
 
-      <aside>
-        {options && <TabletopForm
-            options={options}
-            loading={loading}
-            demo={health?.llm_provider === 'demo'}
-            onSubmit={generate}
-          />}
-      </aside>
-
-      <main>
-        {error && (
+      {error && (
+        <main>
           <div className="card error" role="alert">
             {error}
           </div>
-        )}
-        {exercise && options ? (
-          <>
-            <div className="toolbar">
-              <button type="button" onClick={exportMarkdown}>
-                Export Markdown
-              </button>
-              <button
-                type="button"
-                className="secondary"
-                onClick={() =>
-                  download(`${slug(exercise.title)}.json`, JSON.stringify(exercise, null, 2), 'application/json')
-                }
-              >
-                Export JSON
-              </button>
-            </div>
-            <ExerciseView exercise={exercise} phases={options.phases} />
-          </>
-        ) : (
-          !error && (
-            <div className="card empty">
-              <h2>No exercise yet</h2>
-              <p>Pick a scenario and audience, then generate. The result appears here.</p>
-            </div>
-          )
-        )}
-      </main>
+        </main>
+      )}
+      {!error && tab === 'tabletop' && options && <TabletopPage health={health} options={options} />}
+      {!error && tab === 'assessment' && <AssessmentPage />}
     </div>
   )
 }
