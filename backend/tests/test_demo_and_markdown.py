@@ -140,3 +140,43 @@ def test_demo_mode_assesses_the_example_plan_whatever_is_uploaded(monkeypatch):
     assert body["validation"]["warnings"][0] == deps.DEMO_ASSESSMENT_NOTICE
     assert body["validation"]["unverified_quotes"] == []  # quotes checked against the example plan
     assert body["score"]["score"] == 66.3
+
+
+def test_aar_example_survives_current_validation_unchanged():
+    from app.api.deps import aar_csf_categories
+    from app.llm.demo import load_demo_aar, load_demo_aar_request
+    from app.modules.aar.service import AARService
+
+    saved = load_demo_aar()
+    rebuilt = AARService(DemoStructuredLLM.default(), aar_csf_categories()).generate(load_demo_aar_request())
+    assert rebuilt.model_dump() == saved.model_dump()
+    assert saved.validation.unverified_observations == []
+    assert saved.validation.rejected_csf_categories == []
+
+
+def test_aar_example_markdown_matches_the_saved_json():
+    from app.llm.demo import DEMO_AAR_FILE, load_demo_aar
+    from app.modules.aar.export import to_markdown
+
+    assert to_markdown(load_demo_aar()) == DEMO_AAR_FILE.with_suffix(".md").read_text(encoding="utf-8")
+
+
+def test_demo_mode_reports_on_the_example_notes_whatever_is_sent(monkeypatch):
+    from fastapi.testclient import TestClient
+
+    from app.api import deps
+    from app.core.config import Settings
+    from app.main import app
+
+    demo = Settings(llm_provider="demo", anthropic_api_key=None, _env_file=None)
+    deps.get_llm.cache_clear()
+    monkeypatch.setattr(deps, "get_settings", lambda: demo)
+    try:
+        res = TestClient(app).post("/api/aar", json={"notes": "Totally different notes about a DDoS drill. " * 5})
+    finally:
+        deps.get_llm.cache_clear()
+    assert res.status_code == 200
+    body = res.json()
+    assert body["validation"]["warnings"][0] == deps.DEMO_AAR_NOTICE
+    assert body["validation"]["unverified_observations"] == []  # verified against the example notes
+    assert body["title"].startswith("Harbor Valley")

@@ -10,7 +10,7 @@ from app.catalogs.scenarios import get_scenarios
 from app.core.config import get_settings
 from app.llm.base import StructuredLLM
 from app.llm.claude import ClaudeStructuredLLM
-from app.llm.demo import DemoStructuredLLM, load_demo_plan, load_demo_tabletop
+from app.llm.demo import DemoStructuredLLM, load_demo_aar_request, load_demo_plan, load_demo_tabletop
 from app.modules.aar.service import AARService
 from app.modules.assessment.service import AssessmentService
 from app.modules.tabletop.service import TabletopService
@@ -80,5 +80,21 @@ def aar_csf_categories() -> dict[str, str]:
     return categories
 
 
+DEMO_AAR_NOTICE = (
+    "Demo mode: this is a pre-generated report from the fictional Harbor Valley tabletop notes "
+    "(examples/aar-notes-ransomware-tabletop.md). Your notes were not used; quotes are verified "
+    "against the example notes. Set LLM_PROVIDER=anthropic and an API key to analyze your own notes."
+)
+
+
 def get_aar_service() -> AARService:
+    if get_settings().llm_provider == "demo":
+        return AARService(
+            _LazyLLM(), aar_csf_categories(), notice=DEMO_AAR_NOTICE, fixed_request=_demo_aar_request(),
+        )
     return AARService(_LazyLLM(), aar_csf_categories())
+
+
+@lru_cache(maxsize=1)
+def _demo_aar_request():
+    return load_demo_aar_request()
