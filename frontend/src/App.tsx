@@ -76,7 +76,12 @@ export default function App() {
       </header>
 
       <aside>
-        {options && <TabletopForm options={options} loading={loading} onSubmit={generate} />}
+        {options && <TabletopForm
+            options={options}
+            loading={loading}
+            demo={health?.llm_provider === 'demo'}
+            onSubmit={generate}
+          />}
       </aside>
 
       <main>

@@ -76,13 +76,16 @@ def test_demo_mode_runs_the_api_without_a_key(monkeypatch):
         client = TestClient(app)
         assert client.get("/api/health").json()["llm_provider"] == "demo"
         assert client.get("/api/health").json()["llm_configured"] is True
-        res = client.post("/api/tabletop", json=REQUEST.model_dump(mode="json"))
+        other = {"industry": "technology", "org_size": "large", "scenario": "bec", "audience": "technical"}
+        res = client.post("/api/tabletop", json=other)
     finally:
         deps.get_llm.cache_clear()
     assert res.status_code == 200
     body = res.json()
     assert body["validation"]["warnings"][0] == deps.DEMO_NOTICE
     assert body["validation"]["techniques_accepted"] == 9
+    # The response reports what the content was generated for, not the ignored form inputs.
+    assert body["request"] == REQUEST.model_dump(mode="json")
 
 
 def test_markdown_export_endpoint():
