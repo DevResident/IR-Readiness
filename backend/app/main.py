@@ -12,7 +12,7 @@ import logging
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from app.api.routes import assessment, attack, health, tabletop
+from app.api.routes import aar, assessment, attack, health, tabletop
 from app.core.config import get_settings
 from app.core.limits import BodySizeLimitMiddleware
 
@@ -42,3 +42,4 @@ app.include_router(health.router, prefix="/api")
 app.include_router(attack.router, prefix="/api")
 app.include_router(tabletop.router, prefix="/api")
 app.include_router(assessment.router, prefix="/api")
+app.include_router(aar.router, prefix="/api")
