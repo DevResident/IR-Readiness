@@ -4,6 +4,7 @@ Secrets (the Anthropic API key) live only in the environment, never in code or l
 """
 
 from functools import lru_cache
+from typing import Literal
 
 from pydantic import SecretStr
 from pydantic_settings import BaseSettings, SettingsConfigDict
@@ -12,6 +13,8 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 class Settings(BaseSettings):
     model_config = SettingsConfigDict(env_file=".env", extra="ignore")
 
+    # "anthropic" calls the model; "demo" replays examples/ so the app runs without an API key
+    llm_provider: Literal["anthropic", "demo"] = "anthropic"
     anthropic_api_key: SecretStr | None = None  # SecretStr hides the value in repr() and logs
     anthropic_model: str = "claude-opus-5-5"
     anthropic_effort: str = "medium"  # low | medium | high | xhigh | max
@@ -21,6 +24,10 @@ class Settings(BaseSettings):
     anthropic_extra_headers: dict[str, str] = {}
     cors_origins: str = "http://localhost:5173"
     log_level: str = "INFO"
+
+    @property
+    def llm_configured(self) -> bool:
+        return self.llm_provider == "demo" or self.anthropic_api_key is not None
 
     @property
     def cors_origin_list(self) -> list[str]:

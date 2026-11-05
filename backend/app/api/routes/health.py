@@ -9,9 +9,11 @@ router = APIRouter(tags=["health"])
 @router.get("/health")
 def health() -> dict:
     catalog = get_catalog()
+    settings = get_settings()
     return {
         "status": "ok",
         "attack_version": catalog.version,
         "attack_techniques": len(catalog),
-        "llm_configured": get_settings().anthropic_api_key is not None,
+        "llm_provider": settings.llm_provider,
+        "llm_configured": settings.llm_configured,
     }
