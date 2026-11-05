@@ -8,7 +8,7 @@ from app.catalogs.scenarios import get_scenarios
 from app.core.config import get_settings
 from app.llm.base import StructuredLLM
 from app.llm.claude import ClaudeStructuredLLM
-from app.llm.demo import DemoStructuredLLM
+from app.llm.demo import DemoStructuredLLM, load_demo_tabletop
 from app.modules.tabletop.service import TabletopService
 
 
@@ -29,11 +29,20 @@ class _LazyLLM:
 
 
 DEMO_NOTICE = (
-    "Demo mode: this is a pre-generated example (healthcare, ransomware, executive audience), "
-    "not an exercise generated for the requested inputs."
+    "Demo mode: this is a pre-generated example. Your form inputs were not used; "
+    "the request shown is the one this example was generated for."
 )
 
 
 def get_tabletop_service() -> TabletopService:
-    notice = DEMO_NOTICE if get_settings().llm_provider == "demo" else None
-    return TabletopService(_LazyLLM(), get_catalog(), get_ir_lifecycle(), get_scenarios(), notice=notice)
+    if get_settings().llm_provider == "demo":
+        return TabletopService(
+            _LazyLLM(), get_catalog(), get_ir_lifecycle(), get_scenarios(),
+            notice=DEMO_NOTICE, fixed_request=_demo_request(),
+        )
+    return TabletopService(_LazyLLM(), get_catalog(), get_ir_lifecycle(), get_scenarios())
+
+
+@lru_cache(maxsize=1)
+def _demo_request():
+    return load_demo_tabletop().request

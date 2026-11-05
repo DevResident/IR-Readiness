@@ -5,10 +5,11 @@ import { AUDIENCE_LABELS, ORG_SIZE_LABELS, humanize } from '../labels'
 interface Props {
   options: TabletopOptions
   loading: boolean
+  demo: boolean
   onSubmit: (request: TabletopRequest) => void
 }
 
-export function TabletopForm({ options, loading, onSubmit }: Props) {
+export function TabletopForm({ options, loading, demo, onSubmit }: Props) {
   const [form, setForm] = useState<TabletopRequest>({
     industry: options.industries[0],
     org_size: options.org_sizes[1] ?? options.org_sizes[0],
@@ -78,6 +79,13 @@ export function TabletopForm({ options, loading, onSubmit }: Props) {
       </label>
 
       {scenario && <p className="hint">{scenario.summary}</p>}
+
+      {demo && (
+        <p className="hint demo-note">
+          Demo mode is on, so these inputs are ignored and a pre-generated example is shown. Set
+          LLM_PROVIDER=anthropic on the backend to generate from your inputs.
+        </p>
+      )}
 
       <button type="submit" disabled={loading}>
         {loading ? 'Generating… (this can take a minute)' : 'Generate exercise'}

@@ -30,14 +30,20 @@ class TabletopService:
         lifecycle: IRLifecycle,
         scenarios: dict[str, ScenarioTemplate],
         notice: str | None = None,
+        fixed_request: TabletopRequest | None = None,
     ):
         self._llm = llm
         self._catalog = catalog
         self._lifecycle = lifecycle
         self._scenarios = scenarios
         self._notice = notice  # e.g. the demo-mode disclaimer, shown first in warnings
+        # Demo mode replays one saved exercise. Reporting the caller's inputs next to that
+        # content would be misleading (e.g. "technology" over a hospital scenario), so the
+        # response reports the request the content was actually generated for.
+        self._fixed_request = fixed_request
 
     def generate(self, request: TabletopRequest) -> TabletopExercise:
+        request = self._fixed_request or request
         scenario = self._scenarios[request.scenario]
         prompt = build_prompt(request, scenario, self._catalog, self._lifecycle)
         draft = self._llm.generate(system=SYSTEM_PROMPT, prompt=prompt, schema=TabletopDraft)

@@ -99,6 +99,7 @@ aside .form { position: sticky; top: 1rem; }
   border: 1px solid var(--border); border-radius: 6px; background: var(--bg); color: var(--text);
 }
 .hint { font-size: 0.85rem; color: var(--muted); margin: 0; }
+.demo-note { background: var(--warn-bg); color: var(--warn-text); padding: 0.5rem 0.6rem; border-radius: 6px; }
 
 button {
   font: inherit; font-weight: 600; cursor: pointer;
