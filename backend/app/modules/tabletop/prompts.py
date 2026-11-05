@@ -29,6 +29,10 @@ Framework rules:
 - technique_ids must be MITRE ATT&CK Enterprise technique IDs (format T1234 or \
 T1234.001). Prefer the suggested techniques. Never invent an ID: if you are not sure \
 an ID exists, leave it out. Every ID is checked against ATT&CK and unknown IDs are removed.
+- Map a technique to an inject only when the inject shows that attacker behavior \
+happening or being discovered. Injects about business decisions, recovery or \
+communications usually have an empty technique_ids list; do not repeat a technique \
+just to fill the field.
 - csf_category, when used, must be one of the CSF 2.0 categories you are given, or null.
 """
 
@@ -101,7 +105,9 @@ CSF 2.0 categories you may reference:
 Requirements:
 - About {num_injects} injects in chronological order, with sequence numbers starting at 1, \
 escalating in pressure. Most injects belong to detect, respond and recover.
-- Discussion questions for each of detect, respond, recover and improve; 3 to 5 per phase.
+- One coherent attack path: choose a single initial access vector. You do not need to \
+use every suggested technique.
+- Discussion questions for every phase key (detect, respond, recover, improve), 3 to 5 each.
 - A facilitator guide with preparation steps, a timed agenda that fits {request.duration_minutes} \
 minutes, facilitation tips, and the gaps this exercise is expected to surface.
 """

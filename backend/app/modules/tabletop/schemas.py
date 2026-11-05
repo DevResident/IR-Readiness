@@ -77,6 +77,27 @@ class DiscussionQuestion(BaseModel):
     )
 
 
+class QuestionDraft(BaseModel):
+    question: ShortText
+    csf_category: str | None = Field(
+        default=None, description="Optional CSF 2.0 category ID, e.g. RS.CO. Validated by the service."
+    )
+
+
+class QuestionsByPhase(BaseModel):
+    """One required list per phase, so the model cannot skip a phase.
+
+    A flat list with a phase field let a real model return only 'detect' questions.
+    With required keys, structured outputs guarantee every phase is present, and the
+    minimum count is validated client-side (triggering a corrective retry).
+    """
+
+    detect: list[QuestionDraft] = Field(min_length=2, max_length=6)
+    respond: list[QuestionDraft] = Field(min_length=2, max_length=6)
+    recover: list[QuestionDraft] = Field(min_length=2, max_length=6)
+    improve: list[QuestionDraft] = Field(min_length=2, max_length=6)
+
+
 class FacilitatorGuide(BaseModel):
     preparation: list[str] = Field(min_length=1, max_length=10)
     agenda: list[str] = Field(min_length=1, max_length=12)
@@ -104,7 +125,7 @@ class TabletopDraft(BaseModel):
     objectives: list[str] = Field(min_length=1, max_length=8)
     roles: list[Role] = Field(min_length=1, max_length=12)
     injects: list[InjectDraft] = Field(min_length=3, max_length=12)
-    discussion_questions: list[DiscussionQuestion] = Field(min_length=3, max_length=30)
+    discussion_questions: QuestionsByPhase
     facilitator_guide: FacilitatorGuide
 
 

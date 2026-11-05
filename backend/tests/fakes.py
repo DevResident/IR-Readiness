@@ -34,12 +34,14 @@ def make_draft(**overrides) -> dict:
         "objectives": ["Test escalation paths"],
         "roles": [{"title": "Incident response lead", "responsibilities": ["Coordinate the response"]}],
         "injects": [inject, {**inject, "sequence": 2}, {**inject, "sequence": 3}],
-        "discussion_questions": [
-            {"phase": "detect", "question": "Who decides this is an incident?", "csf_category": "RS.MA"},
-            {"phase": "respond", "question": "What do we isolate first?"},
-            {"phase": "recover", "question": "How do we know backups are clean?", "csf_category": "RC.RP"},
-            {"phase": "improve", "question": "What would we change in the plan?"},
-        ],
+        "discussion_questions": {
+            "detect": [{"question": "Who decides this is an incident?", "csf_category": "RS.MA"},
+                       {"question": "Which alert would we see first?"}],
+            "respond": [{"question": "What do we isolate first?"}, {"question": "Who talks to the media?"}],
+            "recover": [{"question": "How do we know backups are clean?", "csf_category": "RC.RP"},
+                        {"question": "Which system comes back first?"}],
+            "improve": [{"question": "What would we change in the plan?"}, {"question": "Who owns each fix?"}],
+        },
         "facilitator_guide": {
             "preparation": ["Confirm participants"],
             "agenda": ["Introduction", "Injects", "Hot wash"],
