@@ -134,3 +134,54 @@ export interface AssessmentReport {
   top_gaps: string[]
   validation: { unverified_quotes: string[]; unknown_controls: string[]; not_assessed: string[]; warnings: string[] }
 }
+
+// ---------- Module 3: after-action report (mirrors backend/app/modules/aar/schemas.py) ----------
+
+export interface AARRequest {
+  notes: string
+  exercise_title?: string | null
+  event_type: 'tabletop' | 'incident'
+  event_date?: string | null
+}
+
+export interface AARObservation {
+  id: string
+  kind: 'strength' | 'improvement'
+  title: string
+  detail: string
+  phase: PhaseId
+  csf_category: string | null
+  csf_title: string | null
+  evidence_quote: string | null
+  evidence_verified: boolean
+}
+
+export interface AARRecommendation {
+  rank: number
+  title: string
+  action: string
+  priority: 'high' | 'medium' | 'low'
+  timeframe: '30 days' | '90 days' | '180 days'
+  suggested_owner: string
+  addresses: string[]
+  csf_category: string | null
+  csf_title: string | null
+}
+
+export interface AfterActionReport {
+  title: string
+  event_type: 'tabletop' | 'incident'
+  event_date: string | null
+  executive_summary: string
+  scope: string
+  strengths: AARObservation[]
+  areas_for_improvement: AARObservation[]
+  gaps: string[]
+  recommendations: AARRecommendation[]
+  validation: {
+    unverified_observations: string[]
+    rejected_csf_categories: string[]
+    dropped_links: string[]
+    warnings: string[]
+  }
+}
