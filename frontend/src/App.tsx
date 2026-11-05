@@ -1,18 +1,21 @@
 import { useEffect, useState } from 'react'
 import { api } from './api/client'
 import type { Health, TabletopOptions } from './api/types'
+import { AARPage } from './pages/AARPage'
 import { AssessmentPage } from './pages/AssessmentPage'
 import { TabletopPage } from './pages/TabletopPage'
 
-type Tab = 'tabletop' | 'assessment'
+type Tab = 'tabletop' | 'assessment' | 'aar'
 
 const TABS: { id: Tab; label: string }[] = [
   { id: 'tabletop', label: 'Tabletop exercise' },
   { id: 'assessment', label: 'Plan assessment' },
+  { id: 'aar', label: 'After-action report' },
 ]
 
 function initialTab(): Tab {
-  return window.location.hash === '#assessment' ? 'assessment' : 'tabletop'
+  const hash = window.location.hash.slice(1)
+  return TABS.some((t) => t.id === hash) ? (hash as Tab) : 'tabletop'
 }
 
 export default function App() {
@@ -37,10 +40,10 @@ export default function App() {
 
   return (
     <div className="layout">
-      <header>
+      <header className="no-print">
         <h1>IR Readiness Copilot</h1>
         <p className="muted">
-          Incident response readiness checks and tabletop exercises mapped to NIST SP 800-61r3 and CSF 2.0, with every
+          Incident response readiness checks, tabletop exercises and after-action reports mapped to NIST SP 800-61r3 and CSF 2.0, with every
           framework reference verified.
         </p>
         {health && (
@@ -80,6 +83,7 @@ export default function App() {
       )}
       {!error && tab === 'tabletop' && options && <TabletopPage health={health} options={options} />}
       {!error && tab === 'assessment' && <AssessmentPage />}
+      {!error && tab === 'aar' && <AARPage />}
     </div>
   )
 }

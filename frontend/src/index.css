@@ -194,3 +194,28 @@ abbr.csf { text-decoration: none; cursor: help; font-family: ui-monospace, monos
 .quote.unverified .quote-tag { color: var(--error-text); }
 .warn-text { color: var(--warn-text); }
 input[type='file'] { font: inherit; font-weight: 400; max-width: 100%; }
+
+/* ---------- after-action report ---------- */
+.form textarea {
+  font: inherit; font-weight: 400; padding: 0.5rem; border: 1px solid var(--border); border-radius: 6px;
+  background: var(--bg); color: var(--text); resize: vertical; min-height: 10rem;
+}
+.table-wrap { overflow-x: auto; margin-bottom: 1rem; border: 1px solid var(--border); border-radius: 10px; background: var(--surface); }
+table.recs { border-collapse: collapse; width: 100%; font-size: 0.9rem; }
+table.recs th, table.recs td { text-align: left; vertical-align: top; padding: 0.55rem 0.7rem; border-bottom: 1px solid var(--border); }
+table.recs th { color: var(--muted); font-weight: 600; white-space: nowrap; }
+table.recs tr:last-child td { border-bottom: none; }
+.prio { font-weight: 700; font-size: 0.8rem; text-transform: uppercase; }
+.prio.high { color: var(--error-text); }
+.prio.medium { color: var(--warn-text); }
+.prio.low { color: var(--muted); }
+.observation { border-left: 4px solid var(--border); }
+.observation.strength { border-left-color: var(--ok-text); }
+.observation.improvement { border-left-color: var(--warn-text); }
+
+@media print {
+  .no-print, aside, .toolbar, .tabs { display: none !important; }
+  body { background: #fff; }
+  .layout { display: block; padding: 0; }
+  .card, .table-wrap { break-inside: avoid; border-color: #ccc; }
+}
