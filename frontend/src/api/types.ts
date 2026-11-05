@@ -99,3 +99,38 @@ export interface TabletopExercise {
   facilitator_guide: FacilitatorGuide
   validation: ValidationReport
 }
+
+// ---------- Module 1: assessment (mirrors backend/app/modules/assessment/schemas.py) ----------
+
+export type ControlStatus = 'met' | 'partial' | 'missing'
+export type Priority = 'critical' | 'high' | 'medium'
+
+export interface CsfReference {
+  id: string
+  text: string
+}
+
+export interface ControlResult {
+  control_id: string
+  title: string
+  topic: string
+  phase: PhaseId
+  priority: Priority
+  csf: CsfReference[]
+  sp800_61r3: string
+  status: ControlStatus
+  model_status: ControlStatus
+  evidence: { quote: string; verified: boolean } | null
+  rationale: string
+  recommendation: string
+}
+
+export interface AssessmentReport {
+  checklist: string
+  document: { kind: string; pages: number | null; characters: number; truncated: boolean }
+  summary: string
+  score: { score: number; coverage: number; met: number; partial: number; missing: number; formula: string }
+  results: ControlResult[]
+  top_gaps: string[]
+  validation: { unverified_quotes: string[]; unknown_controls: string[]; not_assessed: string[]; warnings: string[] }
+}
