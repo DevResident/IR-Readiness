@@ -38,3 +38,18 @@ coverage = 100 × (controls that are met or partial) / (all controls)
 The score answers "how ready is the plan, with critical gaps counting more". Coverage answers
 "how much of the checklist the plan touches at all". A plan can have high coverage and a low score
 when it mentions many topics only superficially.
+
+## Upload handling
+
+`POST /api/assessment/document` accepts PDF, DOCX, Markdown or plain text, up to 5 MB.
+
+| Threat | Defense |
+|---|---|
+| Huge request bodies | `BodySizeLimitMiddleware` rejects them by Content-Length before parsing (413), and rejects uploads without a declared length (411). |
+| Renamed files (`malware.exe` → `plan.pdf`) | The extension must be allowed and the content must match it (`%PDF-`, ZIP header, no NUL bytes in text). |
+| DOCX zip bombs | Entry count and total uncompressed size are checked before decompressing. |
+| XML entity attacks in DOCX | `word/document.xml` is parsed with `defusedxml`. |
+| Very long PDFs or texts | At most 150 pages are read and 400,000 characters are kept; the response says when the text was truncated. |
+| Sensitive data at rest or in logs | The file is processed in memory and discarded when the request ends. Logs record only the exception type, never document content (a test uploads a canary string and checks the logs). |
+
+Scanned PDFs without a text layer are rejected with a clear message. OCR is out of scope.
