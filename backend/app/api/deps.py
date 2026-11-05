@@ -3,12 +3,15 @@
 from functools import lru_cache
 
 from app.catalogs.attack import get_catalog
+from app.catalogs.checklists import get_checklist
+from app.catalogs.csf import get_csf
 from app.catalogs.ir_lifecycle import get_ir_lifecycle
 from app.catalogs.scenarios import get_scenarios
 from app.core.config import get_settings
 from app.llm.base import StructuredLLM
 from app.llm.claude import ClaudeStructuredLLM
 from app.llm.demo import DemoStructuredLLM, load_demo_tabletop
+from app.modules.assessment.service import AssessmentService
 from app.modules.tabletop.service import TabletopService
 
 
@@ -46,3 +49,7 @@ def get_tabletop_service() -> TabletopService:
 @lru_cache(maxsize=1)
 def _demo_request():
     return load_demo_tabletop().request
+
+
+def get_assessment_service() -> AssessmentService:
+    return AssessmentService(_LazyLLM(), get_checklist(), get_csf())
