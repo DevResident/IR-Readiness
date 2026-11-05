@@ -151,3 +151,11 @@ def test_upload_without_content_length_is_rejected():
         "/api/assessment/document", content=chunks(), headers={"Content-Type": "multipart/form-data; boundary=x"}
     )
     assert res.status_code == 411
+
+
+def test_fictional_example_plan_is_accepted():
+    from app.catalogs.paths import EXAMPLES_DIR
+
+    path = EXAMPLES_DIR / "ir-plan-fictional-meridian-logistics.md"
+    doc = extract_document(path.name, path.read_bytes())
+    assert "Incident Manager declares an incident" in doc.text
