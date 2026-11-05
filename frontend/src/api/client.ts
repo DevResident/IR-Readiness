@@ -1,4 +1,4 @@
-import type { AssessmentReport, Health, TabletopExercise, TabletopOptions, TabletopRequest } from './types'
+import type { AARRequest, AfterActionReport, AssessmentReport, Health, TabletopExercise, TabletopOptions, TabletopRequest } from './types'
 
 export class ApiError extends Error {
   readonly status: number
@@ -44,6 +44,9 @@ export const api = {
     body.append('file', file)
     return (await request('/assessment', { method: 'POST', body })).json()
   },
+  generateAAR: async (req: AARRequest): Promise<AfterActionReport> => (await request('/aar', json(req))).json(),
+  aarMarkdown: async (report: AfterActionReport): Promise<string> => (await request('/aar/markdown', json(report))).text(),
+  aarDocx: async (report: AfterActionReport): Promise<Blob> => (await request('/aar/docx', json(report))).blob(),
   tabletopMarkdown: async (exercise: TabletopExercise): Promise<string> =>
     (await request('/tabletop/markdown', json(exercise))).text(),
 }

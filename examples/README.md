@@ -7,6 +7,7 @@ All organizations, people and events are fictional.
 |---|---|
 | `tabletop-ransomware-healthcare-executive.json` | Response of `POST /api/tabletop` for `{"industry": "healthcare", "org_size": "medium", "scenario": "ransomware", "audience": "executive"}`. Generated on 2026-11-05 with Claude Haiku 5.5. 9 ATT&CK techniques accepted, 0 remapped, 0 rejected. |
 | `tabletop-ransomware-healthcare-executive.md` | The same exercise rendered with `scripts/render_tabletop_markdown.py`. |
+| `aar-notes-ransomware-tabletop.md` | Fictional facilitator notes from running the ransomware tabletop above, written as realistic input for the After-Action Report generator. |
 | `ir-plan-fictional-meridian-logistics.md` | A fictional IR plan for a logistics company, written for this project. It is intentionally incomplete (for example, no regulatory notification duties, no BCP/DRP link, no exercises) so the assessment has real gaps to find. |
 | `ir-plan-fictional-meridian-logistics.assessment.json` | Response of `POST /api/assessment` for that plan, generated on 2026-11-05 with Claude Haiku 5.5. Score 66.3, coverage 87%: 8 met, 12 partial, 3 missing. All 20 quotes verified against the plan. |
 
