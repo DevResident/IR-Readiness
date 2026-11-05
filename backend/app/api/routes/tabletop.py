@@ -1,4 +1,5 @@
 from fastapi import APIRouter, Depends, HTTPException
+from fastapi.responses import PlainTextResponse
 
 from app.api.deps import get_tabletop_service
 from app.catalogs.ir_lifecycle import get_ir_lifecycle
@@ -9,6 +10,7 @@ from app.llm.base import (
     LLMRefusalError,
     LLMUnavailableError,
 )
+from app.modules.tabletop.markdown import render_markdown
 from app.modules.tabletop.schemas import Audience, Industry, OrgSize, TabletopExercise, TabletopRequest
 from app.modules.tabletop.service import TabletopService
 
@@ -43,3 +45,9 @@ def generate_tabletop(request: TabletopRequest, service: TabletopService = Depen
         raise HTTPException(status_code=422, detail="The AI model declined to generate this exercise") from exc
     except LLMInvalidOutputError as exc:
         raise HTTPException(status_code=502, detail="The AI model returned an invalid exercise, try again") from exc
+
+
+@router.post("/markdown", response_class=PlainTextResponse)
+def export_markdown(exercise: TabletopExercise) -> PlainTextResponse:
+    """Render an exercise (as returned by POST /api/tabletop) as Markdown. No LLM call."""
+    return PlainTextResponse(render_markdown(exercise), media_type="text/markdown; charset=utf-8")
