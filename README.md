@@ -35,6 +35,20 @@ curl -s -X POST http://127.0.0.1:8000/api/tabletop \
   -d '{"industry":"healthcare","org_size":"medium","scenario":"ransomware","audience":"executive"}'
 ```
 
+## Running the frontend
+
+With the backend running on port 8000 (demo mode works too):
+
+```bash
+cd frontend
+npm install
+npm run dev
+# then open http://localhost:5173
+```
+
+The Vite dev server proxies `/api` to the backend, so the browser talks to a single origin.
+Pick an industry, size, scenario and audience, generate, and export the result as Markdown or JSON.
+
 ## How a tabletop is generated
 
 1. The request contains only enumerated values (industry, size, scenario, audience), so no free text reaches the prompt.

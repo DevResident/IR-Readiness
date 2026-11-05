@@ -83,3 +83,23 @@ def test_demo_mode_runs_the_api_without_a_key(monkeypatch):
     body = res.json()
     assert body["validation"]["warnings"][0] == deps.DEMO_NOTICE
     assert body["validation"]["techniques_accepted"] == 9
+
+
+def test_markdown_export_endpoint():
+    from fastapi.testclient import TestClient
+
+    from app.main import app
+
+    saved = load_demo_tabletop()
+    res = TestClient(app).post("/api/tabletop/markdown", json=saved.model_dump(mode="json"))
+    assert res.status_code == 200
+    assert res.headers["content-type"].startswith("text/markdown")
+    assert res.text == render_markdown(saved)
+
+
+def test_markdown_export_rejects_invalid_body():
+    from fastapi.testclient import TestClient
+
+    from app.main import app
+
+    assert TestClient(app).post("/api/tabletop/markdown", json={"title": "x"}).status_code == 422
