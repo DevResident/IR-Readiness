@@ -54,5 +54,5 @@ Why a monorepo: the API contract, the framework data and both apps change togeth
 | 8 | Module 1 UI, fictional IR plan + its assessment in `/examples` | UI and plan done; real assessment example pending |
 | 9 | Module 3: notes → structured AAR with prioritized recommendations and suggested owners | done (backend) |
 | 10 | PDF/DOCX export, AAR example | |
-| 11 | README (architecture diagram, pipeline, screenshots, limitations, roadmap), GitHub Actions CI | |
+| 11 | README (architecture diagram, pipeline, screenshots, limitations, roadmap), GitHub Actions CI | done |
 | 12 | Buffer, CV bullets, interview pitch | |
