@@ -24,6 +24,9 @@ uvicorn app.main:app --reload
 # then open http://127.0.0.1:8000/docs
 ```
 
+**No API key?** Set `LLM_PROVIDER=demo` in `backend/.env`. The API then replays the example in
+[`examples/`](examples/) through the same validation pipeline, and the response's first warning says it is a demo.
+
 Generate a tabletop exercise:
 
 ```bash
@@ -39,6 +42,8 @@ curl -s -X POST http://127.0.0.1:8000/api/tabletop \
 3. Claude returns JSON constrained to the `TabletopDraft` schema (structured outputs); the SDK also validates lengths and list sizes client-side. Invalid or truncated output is retried once with the validation error as feedback.
 4. Every ATT&CK technique ID is checked against the pinned v20.0 catalog: unknown IDs are dropped, revoked IDs are replaced by MITRE's official successor, and names/URLs come from the catalog. Unknown CSF categories are removed.
 5. The response includes a `validation` report listing everything that was dropped, remapped or flagged.
+
+See [`examples/tabletop-ransomware-healthcare-executive.md`](examples/tabletop-ransomware-healthcare-executive.md) for an unedited real output.
 
 ## Regenerating the ATT&CK subset
 

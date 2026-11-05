@@ -29,11 +29,13 @@ class TabletopService:
         catalog: AttackCatalog,
         lifecycle: IRLifecycle,
         scenarios: dict[str, ScenarioTemplate],
+        notice: str | None = None,
     ):
         self._llm = llm
         self._catalog = catalog
         self._lifecycle = lifecycle
         self._scenarios = scenarios
+        self._notice = notice  # e.g. the demo-mode disclaimer, shown first in warnings
 
     def generate(self, request: TabletopRequest) -> TabletopExercise:
         scenario = self._scenarios[request.scenario]
@@ -45,7 +47,7 @@ class TabletopService:
         """Turn an untrusted draft into the public exercise. Pure function: no LLM calls."""
         rejected: list[RejectedReference] = []
         remapped: list[str] = []
-        warnings: list[str] = []
+        warnings: list[str] = [self._notice] if self._notice else []
         accepted = 0
 
         injects: list[Inject] = []

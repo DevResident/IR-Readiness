@@ -48,7 +48,7 @@ Why a monorepo: the API contract, the framework data and both apps change togeth
 | 2 | Scenario templates (ransomware, BEC, insider, supply chain), IR phase model JSON (800-61r3 / CSF 2.0), Pydantic schemas for tabletop output | done |
 | 3 | Claude client wrapper (structured output, retries, defensive parsing), tabletop service with ATT&CK post-validation, `POST /api/tabletop`, tests with mocked LLM | done |
 | 4 | Frontend: tabletop form + rendered result, Markdown export | |
-| 5 | Polish Module 2, ransomware tabletop in `/examples` | |
+| 5 | Polish Module 2, ransomware tabletop in `/examples`, demo mode, Markdown rendering | done (moved ahead of day 4) |
 | 6 | Module 1: secure upload (type sniffing, size limit, delete after analysis), PDF/DOCX/MD text extraction, readiness checklist JSON | |
 | 7 | Per-control evaluation, quote verification against the source text (UNVERIFIED on mismatch), scoring formula | |
 | 8 | Module 1 UI, fictional IR plan + its assessment in `/examples` | |
