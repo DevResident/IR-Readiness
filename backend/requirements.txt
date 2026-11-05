@@ -6,3 +6,4 @@ anthropic==2.4.0
 pypdf==6.21.4
 defusedxml==0.7.1
 python-multipart==0.0.33
+python-docx==1.2.0

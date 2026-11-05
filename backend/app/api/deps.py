@@ -11,6 +11,7 @@ from app.core.config import get_settings
 from app.llm.base import StructuredLLM
 from app.llm.claude import ClaudeStructuredLLM
 from app.llm.demo import DemoStructuredLLM, load_demo_plan, load_demo_tabletop
+from app.modules.aar.service import AARService
 from app.modules.assessment.service import AssessmentService
 from app.modules.tabletop.service import TabletopService
 
@@ -69,3 +70,15 @@ def get_assessment_service() -> AssessmentService:
 @lru_cache(maxsize=1)
 def _demo_plan():
     return load_demo_plan()
+
+
+@lru_cache(maxsize=1)
+def aar_csf_categories() -> dict[str, str]:
+    """CSF 2.0 categories an AAR may cite: the phase model's plus the checklist subset's."""
+    categories = dict(get_ir_lifecycle().csf_categories)
+    categories.update({cid: c.title for cid, c in get_csf().categories.items()})
+    return categories
+
+
+def get_aar_service() -> AARService:
+    return AARService(_LazyLLM(), aar_csf_categories())
