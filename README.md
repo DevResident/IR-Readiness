@@ -24,7 +24,7 @@ uvicorn app.main:app --reload
 # then open http://127.0.0.1:8000/docs
 ```
 
-**No API key?** Set `LLM_PROVIDER=demo` in `backend/.env`. The API then replays the example in
+**No API key?** Set `LLM_PROVIDER=demo` in `backend/.env`. The API then replays the examples in
 [`examples/`](examples/) through the same validation pipeline. Form inputs are ignored in demo mode: the response always shows the example and the request it was generated for, and its first warning says it is a demo.
 
 Generate a tabletop exercise:

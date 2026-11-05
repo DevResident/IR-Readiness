@@ -10,7 +10,7 @@ from app.catalogs.scenarios import get_scenarios
 from app.core.config import get_settings
 from app.llm.base import StructuredLLM
 from app.llm.claude import ClaudeStructuredLLM
-from app.llm.demo import DemoStructuredLLM, load_demo_tabletop
+from app.llm.demo import DemoStructuredLLM, load_demo_plan, load_demo_tabletop
 from app.modules.assessment.service import AssessmentService
 from app.modules.tabletop.service import TabletopService
 
@@ -51,5 +51,21 @@ def _demo_request():
     return load_demo_tabletop().request
 
 
+DEMO_ASSESSMENT_NOTICE = (
+    "Demo mode: this is a pre-generated assessment of the fictional Meridian Freight Logistics plan "
+    "in examples/. Your uploaded file was validated but not assessed."
+)
+
+
 def get_assessment_service() -> AssessmentService:
+    if get_settings().llm_provider == "demo":
+        return AssessmentService(
+            _LazyLLM(), get_checklist(), get_csf(),
+            notice=DEMO_ASSESSMENT_NOTICE, fixed_document=_demo_plan(),
+        )
     return AssessmentService(_LazyLLM(), get_checklist(), get_csf())
+
+
+@lru_cache(maxsize=1)
+def _demo_plan():
+    return load_demo_plan()

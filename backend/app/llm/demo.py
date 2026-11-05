@@ -15,11 +15,15 @@ from pydantic import BaseModel
 
 from app.catalogs.paths import EXAMPLES_DIR
 from app.llm.base import LLMNotConfiguredError
+from app.modules.assessment.ingest import ExtractedDocument, extract_document
+from app.modules.assessment.schemas import AssessmentDraft, AssessmentReport
 from app.modules.tabletop.schemas import TabletopDraft, TabletopExercise
 
 T = TypeVar("T", bound=BaseModel)
 
 DEMO_TABLETOP_FILE = EXAMPLES_DIR / "tabletop-ransomware-healthcare-executive.json"
+DEMO_PLAN_FILE = EXAMPLES_DIR / "ir-plan-fictional-meridian-logistics.md"
+DEMO_ASSESSMENT_FILE = EXAMPLES_DIR / "ir-plan-fictional-meridian-logistics.assessment.json"
 
 
 def exercise_to_draft(exercise: TabletopExercise) -> TabletopDraft:
@@ -58,6 +62,31 @@ def load_demo_tabletop(path: Path = DEMO_TABLETOP_FILE) -> TabletopExercise:
     return TabletopExercise.model_validate(json.loads(path.read_text(encoding="utf-8")))
 
 
+def load_demo_assessment(path: Path = DEMO_ASSESSMENT_FILE) -> AssessmentReport:
+    return AssessmentReport.model_validate(json.loads(path.read_text(encoding="utf-8")))
+
+
+def load_demo_plan(path: Path = DEMO_PLAN_FILE) -> ExtractedDocument:
+    return extract_document(path.name, path.read_bytes())
+
+
+def report_to_draft(report: AssessmentReport) -> AssessmentDraft:
+    """Rebuild the model's draft from a saved report: the model's own status, not the verified one."""
+    return AssessmentDraft.model_validate({
+        "findings": [
+            {
+                "control_id": r.control_id,
+                "status": r.model_status,
+                "evidence_quote": r.evidence.quote if r.evidence else None,
+                "rationale": r.rationale,
+                "recommendation": r.recommendation,
+            }
+            for r in report.results
+        ],
+        "summary": report.summary,
+    })
+
+
 class DemoStructuredLLM:
     """Returns a fixed response per schema. Unknown schemas fail like an unconfigured model."""
 
@@ -66,7 +95,10 @@ class DemoStructuredLLM:
 
     @classmethod
     def default(cls) -> DemoStructuredLLM:
-        return cls({TabletopDraft: exercise_to_draft(load_demo_tabletop())})
+        return cls({
+            TabletopDraft: exercise_to_draft(load_demo_tabletop()),
+            AssessmentDraft: report_to_draft(load_demo_assessment()),
+        })
 
     def generate(self, *, system: str, prompt: str, schema: type[T]) -> T:
         response = self._responses.get(schema)
