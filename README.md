@@ -107,7 +107,8 @@ Real, unedited outputs generated with Claude Haiku 5.5. All organizations are fi
 - [Ransomware tabletop for a hospital's executives](examples/tabletop-ransomware-healthcare-executive.md): 9 ATT&CK techniques, all verified.
 - [Fictional IR plan](examples/ir-plan-fictional-meridian-logistics.md) with deliberate gaps, and
   [its assessment](examples/ir-plan-fictional-meridian-logistics.assessment.json): score 66.3, coverage 87%, all 20 quotes verified.
-- [Facilitator notes from the tabletop](examples/aar-notes-ransomware-tabletop.md), the input for the after-action report.
+- [Facilitator notes from the tabletop](examples/aar-notes-ransomware-tabletop.md) and
+  [the after-action report generated from them](examples/aar-ransomware-tabletop.md): 19 observations, 12 ranked recommendations, all quotes verified.
 
 ## Framework sources
 

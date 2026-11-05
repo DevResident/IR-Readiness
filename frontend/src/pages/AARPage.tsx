@@ -113,6 +113,15 @@ export function AARPage() {
               <button type="button" className="secondary" onClick={() => exportAs('md')}>
                 Export Markdown
               </button>
+              <button
+                type="button"
+                className="secondary"
+                onClick={() =>
+                  download(`${slug(report.title)}.json`, JSON.stringify(report, null, 2), 'application/json')
+                }
+              >
+                Download JSON
+              </button>
               <button type="button" className="secondary" onClick={() => window.print()}>
                 Print / PDF
               </button>

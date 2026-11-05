@@ -1,0 +1,406 @@
+{
+  "title": "Harbor Valley Community Health System Executive Ransomware Tabletop After-Action Report",
+  "event_type": "tabletop",
+  "event_date": null,
+  "executive_summary": "The executive ransomware tabletop on 2026-11-04 showed that Harbor Valley can escalate quickly, protect patient safety, and issue a clear public holding statement. It also exposed gaps that would slow a real response: no written criteria for declaring an incident or severity levels, no clear after-hours authority to take clinical systems offline, no known insurer notice deadline or forensics firm, no notification matrix, no board path for the ransom decision, unpracticed clinic downtime procedures, and backup restore testing last done about 14 months ago. Priority actions are to set declaration and severity criteria, define decision authority including after hours, build a notification and contact matrix, test backup restores, and agree restoration priorities. Most high-priority fixes can be completed within 30 days.",
+  "scope": "Facilitated 90-minute executive tabletop exercise for a fictional healthcare organization. Participants: CEO, CISO (IR lead), IT Operations Director, CMO, General Counsel, Communications Director, Business Continuity Owner, and an insurer representative role-played by the facilitator. The scenario covered seven injects from initial phishing and credential theft through lateral movement, data exfiltration, encryption and backup deletion, ransom and leak-site demands, and restoration on Day 3. Findings are based on facilitator notes and the hot wash; no technical forensic validation was performed.",
+  "strengths": [
+    {
+      "id": "O2",
+      "kind": "strength",
+      "title": "Help desk escalation to on-call worked",
+      "detail": "The help desk would call the security on-call phone, and everyone knew the on-call number. This gave a fast path from frontline staff to security.",
+      "phase": "detect",
+      "csf_category": "RS.MA",
+      "csf_title": "Incident Management",
+      "evidence_quote": "Good: everyone knew the on-call number.",
+      "evidence_verified": true
+    },
+    {
+      "id": "O8",
+      "kind": "strength",
+      "title": "Containment balanced with clinical operations",
+      "detail": "The CMO asked for time to move clinics to downtime procedures before isolating the scheduling system. The CEO then approved isolating the scheduling system without isolating the whole clinical network. This was the strongest discussion of the day and showed good trade-off thinking.",
+      "phase": "respond",
+      "csf_category": "RS.MI",
+      "csf_title": "Incident Mitigation",
+      "evidence_quote": "CMO asked for 30 minutes to move clinics to downtime procedures before isolating the scheduling system",
+      "evidence_verified": true
+    },
+    {
+      "id": "O10",
+      "kind": "strength",
+      "title": "Fast, reviewed holding statement",
+      "detail": "The Communications Director drafted a holding statement in the room in about 10 minutes, and Legal edited it. This showed effective cross-functional teamwork on external communication.",
+      "phase": "respond",
+      "csf_category": "RS.CO",
+      "csf_title": "Incident Response Reporting and Communication",
+      "evidence_quote": "Communications Director drafted a holding statement in the room in about 10 minutes.",
+      "evidence_verified": true
+    },
+    {
+      "id": "O14",
+      "kind": "strength",
+      "title": "Immediate patient safety escalation",
+      "detail": "The CMO escalated ED patient safety immediately and proposed diversion criteria. This put patient care at the center of the response.",
+      "phase": "respond",
+      "csf_category": "RS.MA",
+      "csf_title": "Incident Management",
+      "evidence_quote": "CMO escalated ED patient safety immediately and proposed diversion criteria.",
+      "evidence_verified": true
+    }
+  ],
+  "areas_for_improvement": [
+    {
+      "id": "O1",
+      "kind": "improvement",
+      "title": "No written criteria for declaring an incident",
+      "detail": "The team had no written criteria for declaring an incident. The CISO and IT Operations Director disagreed on who declares, and the initial alert was to be handled as a security event with escalation only if a second host showed activity. This delays a unified response.",
+      "phase": "detect",
+      "csf_category": "GV.RR",
+      "csf_title": "Roles, Responsibilities, and Authorities",
+      "evidence_quote": "No written criteria for declaring an incident",
+      "evidence_verified": true
+    },
+    {
+      "id": "O3",
+      "kind": "improvement",
+      "title": "Mail log search speed unknown",
+      "detail": "No one knew how quickly mail logs could be searched for the same email. IT Operations estimated half a day. Without a tested capability, scoping of phishing spread is uncertain during the first hours.",
+      "phase": "detect",
+      "csf_category": "DE.AE",
+      "csf_title": "Adverse Event Analysis",
+      "evidence_quote": "Nobody knew how quickly mail logs could be searched for the same email.",
+      "evidence_verified": true
+    },
+    {
+      "id": "O4",
+      "kind": "improvement",
+      "title": "Credential reset decision lacked impact check",
+      "detail": "The team decided to reset privileged credentials quickly. IT Operations warned the billing service account would break overnight claims processing, and the decision took 12 minutes, ending with a split approach: reset admins now and the service account after hours. The team lacked a pre-built dependency list to judge such trade-offs.",
+      "phase": "respond",
+      "csf_category": "RS.MI",
+      "csf_title": "Incident Mitigation",
+      "evidence_quote": "IT Ops warned the billing service account would break overnight claims processing.",
+      "evidence_verified": true
+    },
+    {
+      "id": "O5",
+      "kind": "improvement",
+      "title": "Insurer notice deadline unknown",
+      "detail": "General Counsel asked whether the insurer had been notified, and no one knew the policy notice deadline. Finance holds the policy and was not in the room, which delays a time-critical obligation.",
+      "phase": "respond",
+      "csf_category": "RS.CO",
+      "csf_title": "Incident Response Reporting and Communication",
+      "evidence_quote": "Nobody knew the policy's notice deadline.",
+      "evidence_verified": true
+    },
+    {
+      "id": "O6",
+      "kind": "improvement",
+      "title": "Forensics retainer not confirmed",
+      "detail": "The CISO believes a forensics retainer exists through the insurer panel but could not name the firm. Without a confirmed provider and contact, engagement during an active incident would be delayed.",
+      "phase": "prepare",
+      "csf_category": "RS.MA",
+      "csf_title": "Incident Management",
+      "evidence_quote": "CISO believes there is one through the insurer panel but could not name the firm.",
+      "evidence_verified": true
+    },
+    {
+      "id": "O7",
+      "kind": "improvement",
+      "title": "After-hours authority to take clinical systems offline unclear",
+      "detail": "No one could say who has authority to take a clinical system offline after hours if the CEO cannot be reached. This is a critical gap for patient-safety-affecting containment decisions.",
+      "phase": "respond",
+      "csf_category": "GV.RR",
+      "csf_title": "Roles, Responsibilities, and Authorities",
+      "evidence_quote": "No one could say who has the authority to take a clinical system offline after hours if the CEO cannot be reached.",
+      "evidence_verified": true
+    },
+    {
+      "id": "O9",
+      "kind": "improvement",
+      "title": "Clinic downtime procedures not practiced",
+      "detail": "Downtime procedures exist for the EHR, but clinic managers have not practiced them this year. Untested procedures risk slow or error-prone care during an outage.",
+      "phase": "prepare",
+      "csf_category": "PR.IR",
+      "csf_title": "Technology Infrastructure Resilience",
+      "evidence_quote": "Downtime procedures exist for the EHR but the clinic managers have not practiced them this year.",
+      "evidence_verified": true
+    },
+    {
+      "id": "O11",
+      "kind": "improvement",
+      "title": "Breach notification clock and laws unclear",
+      "detail": "General Counsel said HIPAA breach notification has a 60-day clock but was not sure when the clock starts or which state laws apply. No notification matrix exists, which creates legal exposure and deadline risk.",
+      "phase": "respond",
+      "csf_category": "RS.CO",
+      "csf_title": "Incident Response Reporting and Communication",
+      "evidence_quote": "but was not sure when the clock starts or which state laws apply",
+      "evidence_verified": true
+    },
+    {
+      "id": "O12",
+      "kind": "improvement",
+      "title": "Ownership of reporter inquiry delayed",
+      "detail": "No one owned the reporter's email until the CEO assigned it to Communications. Unowned inbound inquiries risk inconsistent or late responses.",
+      "phase": "respond",
+      "csf_category": "GV.RR",
+      "csf_title": "Roles, Responsibilities, and Authorities",
+      "evidence_quote": "No one owned the reporter's email until the CEO assigned it to Communications.",
+      "evidence_verified": true
+    },
+    {
+      "id": "O13",
+      "kind": "improvement",
+      "title": "Backup immutability claimed but restore untested",
+      "detail": "IT Operations said backups are immutable, but the last restore test was before the migration, about 14 months ago. The immutability claim was not supported by recent restore evidence, so recovery confidence is unverified.",
+      "phase": "recover",
+      "csf_category": "RC.RP",
+      "csf_title": "Incident Recovery Plan Execution",
+      "evidence_quote": "about 14 months ago",
+      "evidence_verified": true
+    },
+    {
+      "id": "O15",
+      "kind": "improvement",
+      "title": "No severity levels or major incident definition",
+      "detail": "The team did not agree on whether the event was now a major incident. The plan has no severity levels, so escalation, resourcing, and executive involvement are decided ad hoc.",
+      "phase": "respond",
+      "csf_category": "RS.MA",
+      "csf_title": "Incident Management",
+      "evidence_quote": "the plan has no severity levels",
+      "evidence_verified": true
+    },
+    {
+      "id": "O16",
+      "kind": "improvement",
+      "title": "No board-approved ransom position or sanctions process",
+      "detail": "The CEO said the organization does not pay, but there is no board-approved position and no process for sanctions screening. The group agreed the decision would go to the board chair, but no documented path exists to reach the board quickly.",
+      "phase": "respond",
+      "csf_category": "GV.PO",
+      "csf_title": "Policy",
+      "evidence_quote": "there is no board-approved position and no process for sanctions screening",
+      "evidence_verified": true
+    },
+    {
+      "id": "O17",
+      "kind": "improvement",
+      "title": "Law enforcement contact unknown",
+      "detail": "Nobody knew who the contact at the FBI field office is. Without a known contact, early reporting and coordination would be slower.",
+      "phase": "respond",
+      "csf_category": "RS.CO",
+      "csf_title": "Incident Response Reporting and Communication",
+      "evidence_quote": "nobody knew who the contact at the FBI field office is",
+      "evidence_verified": true
+    },
+    {
+      "id": "O18",
+      "kind": "improvement",
+      "title": "No pre-agreed restoration order",
+      "detail": "Restoration priority was debated for 15 minutes. Clinical wanted EHR interfaces first and Finance, by proxy, wanted billing. No pre-agreed restoration order exists, so restoration decisions are made under pressure.",
+      "phase": "recover",
+      "csf_category": "RC.RP",
+      "csf_title": "Incident Recovery Plan Execution",
+      "evidence_quote": "No pre-agreed restoration order exists.",
+      "evidence_verified": true
+    },
+    {
+      "id": "O19",
+      "kind": "improvement",
+      "title": "No clean-system sign-off owner",
+      "detail": "IT Operations could not say who signs off that a restored system is clean. Without a named approver, restored systems may return to service without a clear security validation.",
+      "phase": "recover",
+      "csf_category": "RC.RP",
+      "csf_title": "Incident Recovery Plan Execution",
+      "evidence_quote": "IT Ops could not say who signs off that a restored system is clean.",
+      "evidence_verified": true
+    }
+  ],
+  "gaps": [
+    "No written criteria or severity levels for declaring and escalating an incident",
+    "No defined decision authority for after-hours clinical system isolation or credential resets",
+    "No notification matrix for HIPAA, state laws, and insurer notice deadlines",
+    "Insurer policy notice deadline not known by incident team; policy held by Finance",
+    "Forensics retainer not confirmed and provider not named",
+    "No documented contact path to FBI field office",
+    "No board-approved ransom payment position or sanctions screening process",
+    "No documented path to reach the board chair quickly",
+    "Backup restore testing not performed recently; immutability unverified",
+    "Clinic managers have not practiced EHR downtime procedures this year",
+    "No pre-agreed restoration priority order",
+    "No named owner for signing off that restored systems are clean"
+  ],
+  "recommendations": [
+    {
+      "rank": 1,
+      "title": "Define incident declaration criteria and severity levels",
+      "action": "Write and approve criteria for declaring an incident, a single declaring authority, and severity levels with escalation triggers and executive notification rules. Add these to the IR plan and test them in the next exercise.",
+      "priority": "high",
+      "timeframe": "30 days",
+      "suggested_owner": "Chief Information Security Officer",
+      "addresses": [
+        "O1",
+        "O15"
+      ],
+      "csf_category": null,
+      "csf_title": null
+    },
+    {
+      "rank": 2,
+      "title": "Set after-hours decision authority for clinical systems",
+      "action": "Approve a delegation charter naming who can isolate clinical systems, reset privileged credentials, and approve downtime when the CEO cannot be reached. Include named alternates and a contact method for each.",
+      "priority": "high",
+      "timeframe": "30 days",
+      "suggested_owner": "Chief Executive Officer",
+      "addresses": [
+        "O7"
+      ],
+      "csf_category": null,
+      "csf_title": null
+    },
+    {
+      "rank": 3,
+      "title": "Build a notification and deadline matrix",
+      "action": "Create a matrix covering HIPAA breach notification timing, state breach laws, insurer notice requirements, and law enforcement reporting. Define when each clock starts, who owns each notice, and the required evidence. Confirm the insurer notice deadline from the policy now.",
+      "priority": "high",
+      "timeframe": "30 days",
+      "suggested_owner": "General Counsel",
+      "addresses": [
+        "O5",
+        "O11"
+      ],
+      "csf_category": null,
+      "csf_title": null
+    },
+    {
+      "rank": 4,
+      "title": "Confirm forensics retainer and key external contacts",
+      "action": "Verify the forensics retainer through the insurer panel and record the firm, contact, and activation process. Record the FBI field office contact and the insurer claims contact in a single, tested contact sheet.",
+      "priority": "high",
+      "timeframe": "30 days",
+      "suggested_owner": "Chief Information Security Officer",
+      "addresses": [
+        "O6",
+        "O17",
+        "O5"
+      ],
+      "csf_category": null,
+      "csf_title": null
+    },
+    {
+      "rank": 5,
+      "title": "Test backup restores and verify immutability",
+      "action": "Perform a full restore test of critical systems from immutable backups and document the results. Verify immutability settings and set a recurring restore test schedule, at least quarterly.",
+      "priority": "high",
+      "timeframe": "30 days",
+      "suggested_owner": "IT Operations Director",
+      "addresses": [
+        "O13"
+      ],
+      "csf_category": null,
+      "csf_title": null
+    },
+    {
+      "rank": 6,
+      "title": "Establish a board-approved ransom decision position",
+      "action": "Obtain board approval for a ransom payment position and document the sanctions screening process. Define the escalation path to the board chair, including backup contacts and the time limit for a decision.",
+      "priority": "high",
+      "timeframe": "90 days",
+      "suggested_owner": "General Counsel",
+      "addresses": [
+        "O16"
+      ],
+      "csf_category": null,
+      "csf_title": null
+    },
+    {
+      "rank": 7,
+      "title": "Map service account dependencies before credential resets",
+      "action": "Document critical service accounts, their business processes, and the outage impact of resetting them. Include overnight claims processing. Use this map to make pre-approved reset sequencing decisions.",
+      "priority": "medium",
+      "timeframe": "90 days",
+      "suggested_owner": "IT Operations Director",
+      "addresses": [
+        "O4"
+      ],
+      "csf_category": null,
+      "csf_title": null
+    },
+    {
+      "rank": 8,
+      "title": "Measure mail log search speed for phishing scoping",
+      "action": "Run a timed test of searching mail logs for a phishing email across all mailboxes. Set a target response time and document the steps and tools needed to meet it.",
+      "priority": "medium",
+      "timeframe": "90 days",
+      "suggested_owner": "Security Operations Manager",
+      "addresses": [
+        "O3"
+      ],
+      "csf_category": null,
+      "csf_title": null
+    },
+    {
+      "rank": 9,
+      "title": "Agree restoration priorities and clean-system sign-off",
+      "action": "Agree a restoration order for clinical and business systems with clinical, finance, and IT input. Name a single approver who confirms restored systems are clean before reconnection.",
+      "priority": "medium",
+      "timeframe": "90 days",
+      "suggested_owner": "Business Continuity Owner",
+      "addresses": [
+        "O18",
+        "O19"
+      ],
+      "csf_category": null,
+      "csf_title": null
+    },
+    {
+      "rank": 10,
+      "title": "Run EHR downtime drills for clinic managers",
+      "action": "Schedule downtime drills for all clinic managers and clinical leads covering EHR downtime procedures. Record gaps and update the procedures after each drill.",
+      "priority": "medium",
+      "timeframe": "90 days",
+      "suggested_owner": "Business Continuity Owner",
+      "addresses": [
+        "O9"
+      ],
+      "csf_category": null,
+      "csf_title": null
+    },
+    {
+      "rank": 11,
+      "title": "Assign owner for inbound reporter and public inquiries",
+      "action": "Define who owns inbound media and reporter inquiries during an incident, with a rule for routing them to Communications within a set time. Include this in the communications plan.",
+      "priority": "medium",
+      "timeframe": "90 days",
+      "suggested_owner": "Communications Director",
+      "addresses": [
+        "O12"
+      ],
+      "csf_category": null,
+      "csf_title": null
+    },
+    {
+      "rank": 12,
+      "title": "Preserve and document what worked",
+      "action": "Capture the help desk escalation path, the patient safety escalation pattern, and the holding statement process as standard playbook steps. Reuse them in future exercises to protect these strengths.",
+      "priority": "low",
+      "timeframe": "180 days",
+      "suggested_owner": "Incident Response Lead",
+      "addresses": [
+        "O2",
+        "O8",
+        "O10",
+        "O14"
+      ],
+      "csf_category": null,
+      "csf_title": null
+    }
+  ],
+  "validation": {
+    "unverified_observations": [],
+    "rejected_csf_categories": [],
+    "dropped_links": [],
+    "warnings": []
+  }
+}

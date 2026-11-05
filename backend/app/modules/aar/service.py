@@ -19,14 +19,28 @@ TIMEFRAME_ORDER = {"30 days": 0, "90 days": 1, "180 days": 2}
 
 
 class AARService:
-    def __init__(self, llm: StructuredLLM, csf_categories: dict[str, str]):
+    def __init__(
+        self,
+        llm: StructuredLLM,
+        csf_categories: dict[str, str],
+        *,
+        notice: str | None = None,
+        fixed_request: AARRequest | None = None,
+    ):
         self._llm = llm
         self._csf = csf_categories
+        self._notice = notice  # e.g. the demo-mode disclaimer, shown first in warnings
+        # Demo mode: always use the example notes, so quotes are verified against the notes they came from
+        self._fixed_request = fixed_request
 
     def generate(self, request: AARRequest) -> AfterActionReport:
+        request = self._fixed_request or request
         prompt = build_prompt(request, self._csf)
         draft = self._llm.generate(system=SYSTEM_PROMPT, prompt=prompt, schema=AARDraft)
-        return self.build_report(request, draft)
+        report = self.build_report(request, draft)
+        if self._notice:
+            report.validation.warnings.insert(0, self._notice)
+        return report
 
     def _category(self, raw: str | None, where: str, rejected: list[str]) -> tuple[str | None, str | None]:
         if not raw:

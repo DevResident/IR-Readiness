@@ -15,6 +15,7 @@ from pydantic import BaseModel
 
 from app.catalogs.paths import EXAMPLES_DIR
 from app.llm.base import LLMNotConfiguredError
+from app.modules.aar.schemas import AARDraft, AARRequest, AfterActionReport
 from app.modules.assessment.ingest import ExtractedDocument, extract_document
 from app.modules.assessment.schemas import AssessmentDraft, AssessmentReport
 from app.modules.tabletop.schemas import TabletopDraft, TabletopExercise
@@ -24,6 +25,8 @@ T = TypeVar("T", bound=BaseModel)
 DEMO_TABLETOP_FILE = EXAMPLES_DIR / "tabletop-ransomware-healthcare-executive.json"
 DEMO_PLAN_FILE = EXAMPLES_DIR / "ir-plan-fictional-meridian-logistics.md"
 DEMO_ASSESSMENT_FILE = EXAMPLES_DIR / "ir-plan-fictional-meridian-logistics.assessment.json"
+DEMO_AAR_NOTES_FILE = EXAMPLES_DIR / "aar-notes-ransomware-tabletop.md"
+DEMO_AAR_FILE = EXAMPLES_DIR / "aar-ransomware-tabletop.json"
 
 
 def exercise_to_draft(exercise: TabletopExercise) -> TabletopDraft:
@@ -87,6 +90,37 @@ def report_to_draft(report: AssessmentReport) -> AssessmentDraft:
     })
 
 
+def load_demo_aar(path: Path = DEMO_AAR_FILE) -> AfterActionReport:
+    return AfterActionReport.model_validate(json.loads(path.read_text(encoding="utf-8")))
+
+
+def load_demo_aar_request(path: Path = DEMO_AAR_NOTES_FILE) -> AARRequest:
+    report = load_demo_aar()
+    return AARRequest(notes=path.read_text(encoding="utf-8"), event_type=report.event_type,
+                      event_date=report.event_date)
+
+
+def aar_to_draft(report: AfterActionReport) -> AARDraft:
+    """Rebuild the model's draft from a saved report, in the model's own observation order."""
+    observations = sorted(report.strengths + report.areas_for_improvement, key=lambda o: int(o.id[1:]))
+    return AARDraft.model_validate({
+        "title": report.title,
+        "executive_summary": report.executive_summary,
+        "scope": report.scope,
+        "observations": [
+            {"id": o.id, "kind": o.kind, "title": o.title, "detail": o.detail, "phase": o.phase,
+             "csf_category": o.csf_category, "evidence_quote": o.evidence_quote}
+            for o in observations
+        ],
+        "gaps": report.gaps,
+        "recommendations": [
+            {"title": r.title, "action": r.action, "priority": r.priority, "timeframe": r.timeframe,
+             "suggested_owner": r.suggested_owner, "addresses": r.addresses, "csf_category": r.csf_category}
+            for r in report.recommendations
+        ],
+    })
+
+
 class DemoStructuredLLM:
     """Returns a fixed response per schema. Unknown schemas fail like an unconfigured model."""
 
@@ -98,6 +132,7 @@ class DemoStructuredLLM:
         return cls({
             TabletopDraft: exercise_to_draft(load_demo_tabletop()),
             AssessmentDraft: report_to_draft(load_demo_assessment()),
+            AARDraft: aar_to_draft(load_demo_aar()),
         })
 
     def generate(self, *, system: str, prompt: str, schema: type[T]) -> T:
