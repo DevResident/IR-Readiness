@@ -30,12 +30,24 @@ TOP_GAPS = 5
 
 
 class AssessmentService:
-    def __init__(self, llm: StructuredLLM, checklist: Checklist, csf: CsfCatalog):
+    def __init__(
+        self,
+        llm: StructuredLLM,
+        checklist: Checklist,
+        csf: CsfCatalog,
+        notice: str | None = None,
+        fixed_document: ExtractedDocument | None = None,
+    ):
         self._llm = llm
         self._checklist = checklist
         self._csf = csf
+        self._notice = notice  # e.g. the demo-mode disclaimer, shown first in warnings
+        # Demo mode replays the assessment of one example plan. Its quotes must be verified
+        # against that plan, not against whatever the user uploaded.
+        self._fixed_document = fixed_document
 
     def assess(self, document: ExtractedDocument) -> AssessmentReport:
+        document = self._fixed_document or document
         prompt = build_prompt(document.text, self._checklist, self._csf)
         draft = self._llm.generate(system=SYSTEM_PROMPT, prompt=prompt, schema=AssessmentDraft)
         return self.build_report(document, draft)
@@ -89,7 +101,7 @@ class AssessmentService:
         gaps = sorted((r for r in results if r.status != "met"),
                       key=lambda r: (PRIORITY_ORDER[r.priority], r.status != "missing"))
 
-        warnings: list[str] = []
+        warnings: list[str] = [self._notice] if self._notice else []
         if document.truncated:
             warnings.append(f"The document was truncated to {len(document.text):,} characters; "
                             "content after that point was not assessed.")

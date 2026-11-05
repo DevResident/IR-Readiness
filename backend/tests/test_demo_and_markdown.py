@@ -106,3 +106,37 @@ def test_markdown_export_rejects_invalid_body():
     from app.main import app
 
     assert TestClient(app).post("/api/tabletop/markdown", json={"title": "x"}).status_code == 422
+
+
+def test_assessment_example_survives_current_validation_unchanged():
+    from app.catalogs.checklists import get_checklist
+    from app.catalogs.csf import get_csf
+    from app.llm.demo import load_demo_assessment, load_demo_plan
+    from app.modules.assessment.service import AssessmentService
+
+    saved = load_demo_assessment()
+    rebuilt = AssessmentService(DemoStructuredLLM.default(), get_checklist(), get_csf()).assess(load_demo_plan())
+    assert rebuilt.model_dump() == saved.model_dump()
+    assert saved.validation.unverified_quotes == []
+
+
+def test_demo_mode_assesses_the_example_plan_whatever_is_uploaded(monkeypatch):
+    from fastapi.testclient import TestClient
+
+    from app.api import deps
+    from app.core.config import Settings
+    from app.main import app
+
+    demo = Settings(llm_provider="demo", anthropic_api_key=None, _env_file=None)
+    deps.get_llm.cache_clear()
+    monkeypatch.setattr(deps, "get_settings", lambda: demo)
+    try:
+        other_plan = ("Our plan: call Bob if something breaks. " * 20).encode()
+        res = TestClient(app).post("/api/assessment", files={"file": ("other.md", other_plan, "text/markdown")})
+    finally:
+        deps.get_llm.cache_clear()
+    assert res.status_code == 200
+    body = res.json()
+    assert body["validation"]["warnings"][0] == deps.DEMO_ASSESSMENT_NOTICE
+    assert body["validation"]["unverified_quotes"] == []  # quotes checked against the example plan
+    assert body["score"]["score"] == 66.3

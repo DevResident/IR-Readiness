@@ -1,0 +1,590 @@
+{
+  "checklist": "Incident Response Plan Readiness Checklist v1.0",
+  "document": {
+    "kind": "markdown",
+    "pages": null,
+    "characters": 5833,
+    "truncated": false
+  },
+  "summary": "Meridian's plan is partially ready. It has solid foundations in severity levels, escalation timelines, containment options and post-incident lessons learned. Significant gaps remain in decision authority for ransom and external notification, legal and regulatory notification obligations, and backup testing. Recovery is not fully defined: there are no start criteria, no verification of restored systems, and no declaration of recovery completion. The plan also lacks any link to business continuity or disaster recovery and has no exercise program, so it is not yet proven under realistic conditions.",
+  "score": {
+    "score": 66.3,
+    "coverage": 87,
+    "met": 8,
+    "partial": 12,
+    "missing": 3,
+    "formula": "score = 100 × Σ(weight × credit) / Σ(weight), with weights critical=3, high=2, medium=1 and credit met=1, partial=0.5, missing=0; coverage = 100 × (met + partial) / controls"
+  },
+  "results": [
+    {
+      "control_id": "IRP-01",
+      "title": "The plan is formally approved and states its scope",
+      "topic": "governance",
+      "phase": "prepare",
+      "priority": "high",
+      "csf": [
+        {
+          "id": "GV.PO-01",
+          "text": "Policy for managing cybersecurity risks is established based on organizational context, cybersecurity strategy, and priorities and is communicated and enforced"
+        },
+        {
+          "id": "ID.IM-04",
+          "text": "Incident response plans and other cybersecurity plans that affect operations are established, communicated, maintained, and improved"
+        }
+      ],
+      "sp800_61r3": "SP 800-61r3 Section 3.1, Table 2 (Preparation and Lessons Learned)",
+      "status": "met",
+      "model_status": "met",
+      "evidence": {
+        "quote": "It applies to all corporate IT systems, the warehouse management system (WMS), the fleet tracking platform and the customer shipping portal.",
+        "verified": true
+      },
+      "rationale": "Approver is named (Chief Operating Officer, March 2026), scope is stated in Section 1 with excluded physical incidents, and version 2.1 is shown. All three look_for elements are present.",
+      "recommendation": ""
+    },
+    {
+      "control_id": "IRP-02",
+      "title": "Incident response roles and responsibilities are defined",
+      "topic": "roles",
+      "phase": "prepare",
+      "priority": "critical",
+      "csf": [
+        {
+          "id": "GV.RR-02",
+          "text": "Roles, responsibilities, and authorities related to cybersecurity risk management are established, communicated, understood, and enforced"
+        }
+      ],
+      "sp800_61r3": "SP 800-61r3 Section 3.1, Table 2 (Preparation and Lessons Learned)",
+      "status": "met",
+      "model_status": "met",
+      "evidence": {
+        "quote": "Directs containment, eradication and recovery of systems.",
+        "verified": true
+      },
+      "rationale": "Section 3 names roles (Incident Manager, Technical Lead, Communications Lead, Legal Advisor, Executive Sponsor), describes each role's responsibilities, and provides backups for most key roles.",
+      "recommendation": ""
+    },
+    {
+      "control_id": "IRP-03",
+      "title": "Decision authority is assigned for high-impact actions",
+      "topic": "roles",
+      "phase": "prepare",
+      "priority": "critical",
+      "csf": [
+        {
+          "id": "GV.RR-01",
+          "text": "Organizational leadership is responsible and accountable for cybersecurity risk and fosters a culture that is risk-aware, ethical, and continually improving"
+        },
+        {
+          "id": "GV.RR-02",
+          "text": "Roles, responsibilities, and authorities related to cybersecurity risk management are established, communicated, understood, and enforced"
+        }
+      ],
+      "sp800_61r3": "SP 800-61r3 Section 3.1, Table 2 (Preparation and Lessons Learned)",
+      "status": "partial",
+      "model_status": "partial",
+      "evidence": {
+        "quote": "The Incident Manager declares an incident when an event is confirmed to involve unauthorized access, malware execution, data exposure or an outage of a critical system caused by malicious activity.",
+        "verified": true
+      },
+      "rationale": "Present: who declares an incident (Incident Manager) and who approves stopping warehouse or portal operations over two hours (Executive Sponsor). Absent: no named decision-maker for external notification and no authority for ransom or extortion demands.",
+      "recommendation": "Assign a named executive, with General Counsel input, the authority to decide on external notification and any ransom or extortion demand. Also state who may approve taking the WMS or fleet platform offline for less than two hours."
+    },
+    {
+      "control_id": "IRP-04",
+      "title": "Incident declaration criteria are defined",
+      "topic": "detection",
+      "phase": "detect",
+      "priority": "high",
+      "csf": [
+        {
+          "id": "DE.AE-08",
+          "text": "Incidents are declared when adverse events meet the defined incident criteria"
+        }
+      ],
+      "sp800_61r3": "SP 800-61r3 Section 3.2, Table 3 (Incident Response)",
+      "status": "met",
+      "model_status": "met",
+      "evidence": {
+        "quote": "The Incident Manager declares an incident when an event is confirmed to involve unauthorized access, malware execution, data exposure or an outage of a critical system caused by malicious activity.",
+        "verified": true
+      },
+      "rationale": "Section 2 defines a security event and a security incident and gives declaration criteria with examples such as malware execution and data exposure.",
+      "recommendation": ""
+    },
+    {
+      "control_id": "IRP-05",
+      "title": "A severity or prioritization matrix exists",
+      "topic": "severity",
+      "phase": "respond",
+      "priority": "critical",
+      "csf": [
+        {
+          "id": "RS.MA-03",
+          "text": "Incidents are categorized and prioritized"
+        }
+      ],
+      "sp800_61r3": "SP 800-61r3 Section 3.2, Table 3 (Incident Response)",
+      "status": "met",
+      "model_status": "met",
+      "evidence": {
+        "quote": "Handled by the security team during business hours",
+        "verified": true
+      },
+      "rationale": "Section 4 gives four severity levels with criteria (ransomware, personal data theft, outages of critical systems, privileged account compromise, malware scope) and response actions and timelines for each level.",
+      "recommendation": ""
+    },
+    {
+      "control_id": "IRP-06",
+      "title": "Escalation paths and timelines are defined",
+      "topic": "escalation",
+      "phase": "respond",
+      "priority": "critical",
+      "csf": [
+        {
+          "id": "RS.MA-04",
+          "text": "Incidents are escalated or elevated as needed"
+        }
+      ],
+      "sp800_61r3": "SP 800-61r3 Section 3.2, Table 3 (Incident Response)",
+      "status": "met",
+      "model_status": "met",
+      "evidence": {
+        "quote": "Outside business hours, the Service Desk calls the on-call security engineer, who escalates SEV1 and SEV2 incidents to the Incident Manager by phone.",
+        "verified": true
+      },
+      "rationale": "Section 4 sets notification targets per severity (Incident Manager within 15 minutes or 1 hour, Executive Sponsor within 30 minutes or 4 hours), and Section 5 defines after-hours escalation.",
+      "recommendation": ""
+    },
+    {
+      "control_id": "IRP-07",
+      "title": "Incident reports are triaged and validated",
+      "topic": "detection",
+      "phase": "detect",
+      "priority": "medium",
+      "csf": [
+        {
+          "id": "RS.MA-02",
+          "text": "Incident reports are triaged and validated"
+        },
+        {
+          "id": "DE.AE-02",
+          "text": "Potentially adverse events are analyzed to better understand associated activities"
+        }
+      ],
+      "sp800_61r3": "SP 800-61r3 Section 3.2, Table 3 (Incident Response)",
+      "status": "met",
+      "model_status": "met",
+      "evidence": {
+        "quote": "The on-call security engineer reviews new tickets within 30 minutes during business hours and confirms whether the report is a real event.",
+        "verified": true
+      },
+      "rationale": "Section 5 covers reporting channels (Service Desk extension and the Report Phishing button), ticket creation in the security queue, and validation by the on-call engineer within a set time.",
+      "recommendation": ""
+    },
+    {
+      "control_id": "IRP-08",
+      "title": "Contact information for responders and third parties is maintained",
+      "topic": "contacts",
+      "phase": "respond",
+      "priority": "high",
+      "csf": [
+        {
+          "id": "RS.MA-01",
+          "text": "The incident response plan is executed in coordination with relevant third parties once an incident is declared"
+        },
+        {
+          "id": "RS.CO-02",
+          "text": "Internal and external stakeholders are notified of incidents"
+        }
+      ],
+      "sp800_61r3": "SP 800-61r3 Section 3.2, Table 3 (Incident Response)",
+      "status": "partial",
+      "model_status": "partial",
+      "evidence": {
+        "quote": "Outside counsel: to be confirmed",
+        "verified": true
+      },
+      "rationale": "Present: internal contact list location, insurer, and managed detection provider. Absent: forensics firm, law enforcement contact, and an out-of-band contact method. Outside counsel is unresolved.",
+      "recommendation": "Name outside counsel and a retained forensics firm, add law enforcement contacts, and define an out-of-band contact method (for example personal mobile numbers or a secondary messaging channel) for use if email or phones are compromised."
+    },
+    {
+      "control_id": "IRP-09",
+      "title": "A communication plan covers internal and external stakeholders",
+      "topic": "communication",
+      "phase": "respond",
+      "priority": "high",
+      "csf": [
+        {
+          "id": "RS.CO-02",
+          "text": "Internal and external stakeholders are notified of incidents"
+        },
+        {
+          "id": "RS.CO-03",
+          "text": "Information is shared with designated internal and external stakeholders"
+        }
+      ],
+      "sp800_61r3": "SP 800-61r3 Section 3.2, Table 3 (Incident Response)",
+      "status": "partial",
+      "model_status": "partial",
+      "evidence": {
+        "quote": "The Communications Lead prepares updates for employees and, when customers are affected, a customer notice.",
+        "verified": true
+      },
+      "rationale": "Present: internal updates to employees, customer notices, media routing, and approval of external statements by the Incident Manager and General Counsel. Absent: partners, leadership update cadence, and any internal leadership communication beyond reporting duties.",
+      "recommendation": "Add communication steps for key partners and suppliers, define a leadership briefing cadence during incidents, and specify who speaks to customers versus media."
+    },
+    {
+      "control_id": "IRP-10",
+      "title": "Legal and regulatory notification obligations are identified",
+      "topic": "communication",
+      "phase": "respond",
+      "priority": "critical",
+      "csf": [
+        {
+          "id": "RS.CO-02",
+          "text": "Internal and external stakeholders are notified of incidents"
+        }
+      ],
+      "sp800_61r3": "SP 800-61r3 Section 3.2, Table 3 (Incident Response)",
+      "status": "partial",
+      "model_status": "partial",
+      "evidence": {
+        "quote": "Advises on legal obligations and contracts.",
+        "verified": true
+      },
+      "rationale": "The Legal Advisor role is defined as advising on legal obligations, but the plan names no applicable notification laws, regulations or contracts, sets no deadlines, and does not assign who makes notifications.",
+      "recommendation": "List the notification laws, regulations and customer or contractual obligations that apply to Meridian, state the notification deadlines, and name the person responsible for each notification."
+    },
+    {
+      "control_id": "IRP-11",
+      "title": "The plan covers coordination with third parties",
+      "topic": "third_parties",
+      "phase": "respond",
+      "priority": "medium",
+      "csf": [
+        {
+          "id": "RS.MA-01",
+          "text": "The incident response plan is executed in coordination with relevant third parties once an incident is declared"
+        }
+      ],
+      "sp800_61r3": "SP 800-61r3 Section 3.2, Table 3 (Incident Response)",
+      "status": "partial",
+      "model_status": "partial",
+      "evidence": {
+        "quote": "Cyber insurance: Harborline Mutual, policy number on file with Finance",
+        "verified": true
+      },
+      "rationale": "The insurer and managed detection provider are named as contacts, but the plan does not say when or how to engage outside counsel, forensics, the insurer or the MDR provider, and does not address coordination with affected suppliers.",
+      "recommendation": "Define engagement triggers and steps for the insurer (including notice deadlines), the MDR provider, outside counsel and forensics, and add a process for coordinating with affected suppliers and service providers."
+    },
+    {
+      "control_id": "IRP-12",
+      "title": "Evidence collection and preservation are defined",
+      "topic": "evidence",
+      "phase": "respond",
+      "priority": "high",
+      "csf": [
+        {
+          "id": "RS.AN-07",
+          "text": "Incident data and metadata are collected, and their integrity and provenance are preserved"
+        },
+        {
+          "id": "RS.AN-06",
+          "text": "Actions performed during an investigation are recorded, and the records' integrity and provenance are preserved"
+        }
+      ],
+      "sp800_61r3": "SP 800-61r3 Section 3.2, Table 3 (Incident Response)",
+      "status": "partial",
+      "model_status": "partial",
+      "evidence": {
+        "quote": "Before rebuilding a compromised system, the Technical Lead makes sure relevant logs are exported.",
+        "verified": true
+      },
+      "rationale": "Only log export before rebuilding is covered. Memory, disk images, chain of custody, integrity protection and evidence retention periods are not addressed.",
+      "recommendation": "Specify evidence types (logs, disk and memory images), chain-of-custody and hashing procedures, secure storage, and retention periods, and require documentation of all evidence handling."
+    },
+    {
+      "control_id": "IRP-13",
+      "title": "Investigation and scoping steps are defined",
+      "topic": "analysis",
+      "phase": "respond",
+      "priority": "medium",
+      "csf": [
+        {
+          "id": "RS.AN-03",
+          "text": "Analysis is performed to establish what has taken place during an incident and the root cause of the incident"
+        },
+        {
+          "id": "RS.AN-08",
+          "text": "An incident's magnitude is estimated and validated"
+        }
+      ],
+      "sp800_61r3": "SP 800-61r3 Section 3.2, Table 3 (Incident Response)",
+      "status": "partial",
+      "model_status": "partial",
+      "evidence": {
+        "quote": "The security team reviews endpoint, email and firewall logs to understand what happened, which systems are affected and how the attacker gained access.",
+        "verified": true
+      },
+      "rationale": "Covers establishing what happened, affected systems, and initial access (partial root cause). No method for estimating full scope or magnitude, and no validation step.",
+      "recommendation": "Add a scoping procedure (for example checking for lateral movement, data access and affected accounts) and a method for estimating and validating the incident's magnitude, including data affected."
+    },
+    {
+      "control_id": "IRP-14",
+      "title": "Containment strategies are defined",
+      "topic": "containment",
+      "phase": "respond",
+      "priority": "critical",
+      "csf": [
+        {
+          "id": "RS.MI-01",
+          "text": "Incidents are contained"
+        }
+      ],
+      "sp800_61r3": "SP 800-61r3 Section 3.2, Table 3 (Incident Response)",
+      "status": "met",
+      "model_status": "met",
+      "evidence": {
+        "quote": "Containment options include isolating endpoints through the endpoint protection console, disabling compromised accounts, resetting passwords and blocking malicious IP addresses and domains at the firewall.",
+        "verified": true
+      },
+      "rationale": "Options are listed and the Incident Manager chooses among them. Business impact is addressed by requiring Executive Sponsor approval if containment stops warehouse or portal operations for over two hours.",
+      "recommendation": ""
+    },
+    {
+      "control_id": "IRP-15",
+      "title": "Eradication steps are defined",
+      "topic": "eradication",
+      "phase": "respond",
+      "priority": "high",
+      "csf": [
+        {
+          "id": "RS.MI-02",
+          "text": "Incidents are eradicated"
+        }
+      ],
+      "sp800_61r3": "SP 800-61r3 Section 3.2, Table 3 (Incident Response)",
+      "status": "partial",
+      "model_status": "partial",
+      "evidence": {
+        "quote": "The Technical Lead removes malware, closes the access path the attacker used and resets credentials for affected accounts.",
+        "verified": true
+      },
+      "rationale": "Present: malware removal, closing the access path, credential resets, and rebuilding from known-good images. Absent: explicit check for persistence mechanisms and any requirement to confirm eradication before recovery.",
+      "recommendation": "Add steps to hunt for persistence mechanisms and remaining attacker access, and require documented confirmation of eradication before recovery begins."
+    },
+    {
+      "control_id": "IRP-16",
+      "title": "Recovery criteria and restoration priorities are defined",
+      "topic": "recovery",
+      "phase": "recover",
+      "priority": "high",
+      "csf": [
+        {
+          "id": "RS.MA-05",
+          "text": "The criteria for initiating incident recovery are applied"
+        },
+        {
+          "id": "RC.RP-01",
+          "text": "The recovery portion of the incident response plan is executed once initiated from the incident response process"
+        },
+        {
+          "id": "RC.RP-02",
+          "text": "Recovery actions are selected, scoped, prioritized, and performed"
+        }
+      ],
+      "sp800_61r3": "SP 800-61r3 Section 3.2, Table 3 (Incident Response)",
+      "status": "partial",
+      "model_status": "partial",
+      "evidence": {
+        "quote": "Systems are restored in this order: identity services (Active Directory), WMS, fleet tracking platform, customer shipping portal, then other business systems.",
+        "verified": true
+      },
+      "rationale": "Restoration priorities are defined. No criteria for starting recovery are stated.",
+      "recommendation": "Define entry criteria for recovery (for example eradication confirmed, backups verified, and approval by the Incident Manager and Executive Sponsor) and state who authorizes the start of restoration."
+    },
+    {
+      "control_id": "IRP-17",
+      "title": "Backup integrity is verified before restoration",
+      "topic": "recovery",
+      "phase": "recover",
+      "priority": "critical",
+      "csf": [
+        {
+          "id": "RC.RP-03",
+          "text": "The integrity of backups and other restoration assets is verified before using them for restoration"
+        },
+        {
+          "id": "PR.DS-11",
+          "text": "Backups of data are created, protected, maintained, and tested"
+        }
+      ],
+      "sp800_61r3": "SP 800-61r3 Section 3.2, Table 3 (Incident Response)",
+      "status": "partial",
+      "model_status": "partial",
+      "evidence": {
+        "quote": "Backups are taken nightly and stored in a separate cloud account.",
+        "verified": true
+      },
+      "rationale": "Backups are taken and stored separately, which partly addresses protection. The plan does not require backup restore testing or any integrity or compromise check before restoration.",
+      "recommendation": "Require periodic restore testing, immutable or offline backup copies, and malware and integrity checks on backups before any restoration."
+    },
+    {
+      "control_id": "IRP-18",
+      "title": "Restored systems are verified and the end of recovery is declared",
+      "topic": "recovery",
+      "phase": "recover",
+      "priority": "medium",
+      "csf": [
+        {
+          "id": "RC.RP-05",
+          "text": "The integrity of restored assets is verified, systems and services are restored, and normal operating status is confirmed"
+        },
+        {
+          "id": "RC.RP-06",
+          "text": "The end of incident recovery is declared based on criteria, and incident-related documentation is completed"
+        }
+      ],
+      "sp800_61r3": "SP 800-61r3 Section 3.2, Table 3 (Incident Response)",
+      "status": "missing",
+      "model_status": "missing",
+      "evidence": null,
+      "rationale": "The plan contains no validation steps for restored systems, no criteria or authority for declaring recovery complete, and no requirement to complete incident documentation at the end of recovery.",
+      "recommendation": "Add post-restoration validation (malware scans, integrity checks, functional testing), name who declares recovery complete and the criteria for doing so, and require completion of incident documentation before closure."
+    },
+    {
+      "control_id": "IRP-19",
+      "title": "Recovery progress is communicated",
+      "topic": "communication",
+      "phase": "recover",
+      "priority": "medium",
+      "csf": [
+        {
+          "id": "RC.CO-03",
+          "text": "Recovery activities and progress in restoring operational capabilities are communicated to designated internal and external stakeholders"
+        },
+        {
+          "id": "RC.CO-04",
+          "text": "Public updates on incident recovery are shared using approved methods and messaging"
+        }
+      ],
+      "sp800_61r3": "SP 800-61r3 Section 3.2, Table 3 (Incident Response)",
+      "status": "partial",
+      "model_status": "partial",
+      "evidence": {
+        "quote": "All external statements are approved by the Incident Manager and the General Counsel before release.",
+        "verified": true
+      },
+      "rationale": "Approval of external statements is defined, but there is no recovery-specific progress update to internal or external stakeholders and no defined cadence or channel for recovery updates.",
+      "recommendation": "Add a recovery progress update process covering internal leadership, customers and the public, with set update frequency and approved channels."
+    },
+    {
+      "control_id": "IRP-20",
+      "title": "The plan is linked to business continuity and disaster recovery",
+      "topic": "continuity",
+      "phase": "recover",
+      "priority": "high",
+      "csf": [
+        {
+          "id": "RC.RP-04",
+          "text": "Critical mission functions and cybersecurity risk management are considered to establish post-incident operational norms"
+        },
+        {
+          "id": "PR.IR-03",
+          "text": "Mechanisms are implemented to achieve resilience requirements in normal and adverse situations"
+        }
+      ],
+      "sp800_61r3": "SP 800-61r3 Section 3.2, Table 3 (Incident Response)",
+      "status": "missing",
+      "model_status": "missing",
+      "evidence": null,
+      "rationale": "The plan does not reference any business continuity or disaster recovery plan, does not define when such plans are activated, and includes no RTO or RPO targets or manual downtime procedures for warehouses and the shipping portal.",
+      "recommendation": "Reference the BCP and DRP, define activation criteria, set RTO and RPO for WMS, fleet tracking and the shipping portal, and document manual downtime procedures for warehouse and shipping operations."
+    },
+    {
+      "control_id": "IRP-21",
+      "title": "A post-incident review process is defined",
+      "topic": "lessons_learned",
+      "phase": "improve",
+      "priority": "high",
+      "csf": [
+        {
+          "id": "ID.IM-03",
+          "text": "Improvements are identified from execution of operational processes, procedures, and activities"
+        },
+        {
+          "id": "ID.IM-04",
+          "text": "Incident response plans and other cybersecurity plans that affect operations are established, communicated, maintained, and improved"
+        }
+      ],
+      "sp800_61r3": "SP 800-61r3 Section 3.1, Table 2 (Preparation and Lessons Learned)",
+      "status": "met",
+      "model_status": "met",
+      "evidence": {
+        "quote": "Within ten business days after a SEV1 or SEV2 incident is closed, the Incident Manager runs a lessons learned meeting with the response team.",
+        "verified": true
+      },
+      "rationale": "A lessons learned meeting is required within a set time, and action items must be recorded with an owner and a due date.",
+      "recommendation": ""
+    },
+    {
+      "control_id": "IRP-22",
+      "title": "The plan is tested through exercises",
+      "topic": "testing",
+      "phase": "improve",
+      "priority": "medium",
+      "csf": [
+        {
+          "id": "ID.IM-02",
+          "text": "Improvements are identified from security tests and exercises, including those done in coordination with suppliers and relevant third parties"
+        }
+      ],
+      "sp800_61r3": "SP 800-61r3 Section 3.1, Table 2 (Preparation and Lessons Learned)",
+      "status": "missing",
+      "model_status": "missing",
+      "evidence": null,
+      "rationale": "The plan does not mention tabletop or functional exercises, testing frequency, or tracking of improvements from exercises.",
+      "recommendation": "Schedule at least annual tabletop exercises (including a ransomware scenario and an after-hours scenario), with defined frequency, participants, and tracked improvement actions."
+    },
+    {
+      "control_id": "IRP-23",
+      "title": "The plan is reviewed and updated on a schedule",
+      "topic": "maintenance",
+      "phase": "improve",
+      "priority": "medium",
+      "csf": [
+        {
+          "id": "ID.IM-04",
+          "text": "Incident response plans and other cybersecurity plans that affect operations are established, communicated, maintained, and improved"
+        },
+        {
+          "id": "GV.PO-02",
+          "text": "Policy for managing cybersecurity risks is reviewed, updated, communicated, and enforced to reflect changes in requirements, threats, technology, and organizational mission"
+        }
+      ],
+      "sp800_61r3": "SP 800-61r3 Section 3.1, Table 2 (Preparation and Lessons Learned)",
+      "status": "partial",
+      "model_status": "partial",
+      "evidence": {
+        "quote": "This plan is reviewed every year by the Director of Information Security, and after any SEV1 incident.",
+        "verified": true
+      },
+      "rationale": "Present: annual review frequency, a trigger after SEV1 incidents, and a document owner and version number. Absent: triggers for SEV2 incidents and for organizational or technology changes, and a version history.",
+      "recommendation": "Add review triggers for SEV2 incidents, significant organizational changes, new systems or regulatory changes, and maintain a version history table."
+    }
+  ],
+  "top_gaps": [
+    "IRP-03",
+    "IRP-10",
+    "IRP-17",
+    "IRP-20",
+    "IRP-08"
+  ],
+  "validation": {
+    "unverified_quotes": [],
+    "unknown_controls": [],
+    "not_assessed": [],
+    "warnings": []
+  }
+}
