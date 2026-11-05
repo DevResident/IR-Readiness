@@ -29,6 +29,17 @@ def test_valid_techniques_get_names_from_catalog_not_from_llm():
     assert exercise.validation.rejected == []
 
 
+def test_draft_missing_a_question_phase_is_invalid():
+    from pydantic import ValidationError
+
+    from app.modules.tabletop.schemas import TabletopDraft
+
+    draft = make_draft()
+    del draft["discussion_questions"]["recover"]
+    with pytest.raises(ValidationError):
+        TabletopDraft.model_validate(draft)
+
+
 def test_invented_techniques_are_dropped_and_reported():
     exercise = service(FakeLLM(draft_with_injects([["T1486", "T1999"], ["T9999.999"], ["phishing"]]))).generate(REQUEST)
     assert [t.id for t in exercise.injects[0].techniques] == ["T1486"]
@@ -54,18 +65,24 @@ def test_injects_are_sorted_and_renumbered():
 
 def test_unknown_csf_category_is_removed():
     questions = make_draft()["discussion_questions"]
-    questions[0]["csf_category"] = "RS.XX"
-    questions[1]["csf_category"] = "rs.co"  # normalized to upper case
+    questions["detect"][0]["csf_category"] = "RS.XX"
+    questions["detect"][1]["csf_category"] = "rs.co"  # normalized to upper case
     exercise = service(FakeLLM(make_draft(discussion_questions=questions))).generate(REQUEST)
     assert exercise.discussion_questions[0].csf_category is None
     assert exercise.discussion_questions[1].csf_category == "RS.CO"
     assert exercise.validation.rejected[0].value == "RS.XX"
 
 
-def test_missing_phase_coverage_is_a_warning():
-    questions = [q for q in make_draft()["discussion_questions"] if q["phase"] != "improve"]
-    exercise = service(FakeLLM(make_draft(discussion_questions=questions))).generate(REQUEST)
-    assert exercise.validation.warnings == ["No discussion questions for phase(s): improve"]
+def test_questions_are_flattened_in_phase_order():
+    exercise = service(FakeLLM(make_draft())).generate(REQUEST)
+    assert [q.phase for q in exercise.discussion_questions] == [
+        "detect", "detect", "respond", "respond", "recover", "recover", "improve", "improve",
+    ]
+
+
+def test_missing_inject_phase_is_a_warning():
+    exercise = service(FakeLLM(make_draft())).generate(REQUEST)  # all fake injects are "detect"
+    assert exercise.validation.warnings == ["No injects for phase(s): respond, recover"]
 
 
 def test_prompt_contains_scenario_context_and_audience():

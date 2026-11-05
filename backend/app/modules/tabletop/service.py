@@ -18,6 +18,7 @@ from app.modules.tabletop.schemas import (
     ValidationReport,
 )
 
+# Order of the per-phase question lists in TabletopDraft.discussion_questions.
 REQUIRED_QUESTION_PHASES = ("detect", "respond", "recover", "improve")
 
 
@@ -69,19 +70,21 @@ class TabletopService:
             ))
 
         questions: list[DiscussionQuestion] = []
-        for i, q in enumerate(draft.discussion_questions, start=1):
+        flat = [(phase, q) for phase in REQUIRED_QUESTION_PHASES
+                for q in getattr(draft.discussion_questions, phase)]
+        for i, (phase, q) in enumerate(flat, start=1):
             category = q.csf_category.strip().upper() if q.csf_category else None
             if category and not self._lifecycle.is_known_csf_category(category):
                 rejected.append(RejectedReference(
                     location=f"question {i}", value=q.csf_category, reason="Not a recognized CSF 2.0 category"
                 ))
                 category = None
-            questions.append(q.model_copy(update={"csf_category": category}))
+            questions.append(DiscussionQuestion(phase=phase, question=q.question, csf_category=category))
 
-        covered = {q.phase for q in questions}
-        missing = [p for p in REQUIRED_QUESTION_PHASES if p not in covered]
+        inject_phases = {i.phase for i in injects}
+        missing = [p for p in ("detect", "respond", "recover") if p not in inject_phases]
         if missing:
-            warnings.append(f"No discussion questions for phase(s): {', '.join(missing)}")
+            warnings.append(f"No injects for phase(s): {', '.join(missing)}")
         if accepted == 0:
             warnings.append("No inject has a validated ATT&CK technique")
 
