@@ -3,3 +3,6 @@ uvicorn[standard]==0.54.0
 pydantic==2.14.2
 pydantic-settings==2.16.2
 anthropic==2.4.0
+pypdf==6.21.4
+defusedxml==0.7.1
+python-multipart==0.0.33

@@ -12,8 +12,9 @@ import logging
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from app.api.routes import attack, health, tabletop
+from app.api.routes import assessment, attack, health, tabletop
 from app.core.config import get_settings
+from app.core.limits import BodySizeLimitMiddleware
 
 settings = get_settings()
 
@@ -34,6 +35,10 @@ app.add_middleware(
     allow_headers=["Content-Type"],
 )
 
+# Reject oversized uploads before the body is parsed.
+app.add_middleware(BodySizeLimitMiddleware)
+
 app.include_router(health.router, prefix="/api")
 app.include_router(attack.router, prefix="/api")
 app.include_router(tabletop.router, prefix="/api")
+app.include_router(assessment.router, prefix="/api")
